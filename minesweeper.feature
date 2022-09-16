@@ -33,28 +33,26 @@ And timer should be null
 
 Examples:
     | currentDifficulty | totalMines | mapWidth | mapHeight |
-    | easy              | 10        | 8        | 8         |
-    | meddium           | 40        | 16       | 16        |
-    | hard              | 99        | 30       | 16        |
+    | easy              | 10         | 8        | 8         |
+    | meddium           | 40         | 16       | 16        |
+    | hard              | 99         | 30       | 16        |
 
 
 Scenario: Reset button
 When a user click on "resetButton" 
 Then the App should restore to default state
 
-Scenario: Timer start with left click
+Scenario Outline: Timer start
 Given all squares are covered
 And timer is null
-When a user press "left click" button on square
+When a user press "mouseClick" button on square
 Then timer should start on "0"
-And square should uncover
 
+Examples:
+    | mouseClick  |
+    | left click  |
+    | right click |
 
-Scenario: Timer start with right click
-Given all squares are covered
-And timer is null
-When a user press "right click" button on square
-Then timer should start on "0"
 
 Scenario: Marking a suspected square
 When a user press "right click" button on a covered square
@@ -101,7 +99,17 @@ Given there is a square uncovered
 When a user press "left click" button on an uncovered square
 Then the App should do nothing
 
-Scenario: Uncovered not mined square value
+Scenario: Uncover not mined square
 When a user uncover a square
 And the square don't have mine
 Then the App should show the number of mines one square around this.
+
+Scenario: Uncover empty adjacent squares
+When a user uncover a square
+And the square don't have mine
+And not adjacent mines
+Then the App should uncover all adjacent covered squares
+And if the another uncovered square has not adjacent mines the App should uncover all adjacent squares
+And repeat it until uncover all squares with no adjacent mines
+
+
