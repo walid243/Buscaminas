@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "test:e2e": "cucumber-js --require cucumber.conf.js --require src/test/steps/**/*.steps.js --tags \"not @Manual\" --parallel 4"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^8.5.3",
+    "@playwright/test": "^1.25.2",
+    "playwright": "^1.25.2"
+  }
+}
