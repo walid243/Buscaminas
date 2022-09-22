@@ -84,11 +84,11 @@ var boardHeight
 		return false
 	}
  }
- Given('a user opens the App', async () => {
+ Given('a user opens the app', async () => {
  	await page.goto(url);
  });
 
- Given('board size is: {string}', async (string) => {
+ Given('board display is: {string}', async (string) => {
 	console.log(string)
 	url = await mapBoardSize(string)
 	await page.goto(url)
@@ -97,12 +97,44 @@ var boardHeight
 	console.log(string)
 	await mapBoardData(string)
  })
- When('a user uncover a mined cell : {string}', async (string) => {
+ When('a user uncover the cell: {string}', async (string) => {
 	checkCell(string)
  })
  Then('the game should end', async () => {
 	expect(live).toBe(false)
  })
+ Then('is game over')
+ Then('timer should stop')
+ Then('the app should uncover all mined cells that are not tagged as suspected')
+ Then('the app should uncover all cell tagged as suspected with no mine')
+ Then('the app should disable all cells')
+ Then('board display should be: {string}')
+ When('a user click on {string}')
+ Then('difficulty should be {string}')
+ Then('the app should restore to {string} default state')
+ When('difficulty is {string}')
+ Then('total mines should be {string}')
+ Then('map width should be {string}')
+ Then('map height should be {string}')
+ Then('all cells should be covered')
+ Then('timer should be null')
+ When('a user press reset button')
+ Then('the app should restore to default state')
+ Then('timer should start on: {string}')
+ When('a user tag the cell: {string} as suspected')
+ When('a user tag the cell: {string} as questionable')
+ Then('timer should increase by {string} for each second')
+ Given('timer count is: {string}')
+ When('a user untag the cell: {string}')
+Given('board have {string} mines')
+Given('posible remaining mines is: {string}')
+Then('posible remaining mines should be: {string}')
+Then('the cell: {string} should be disabled')
+Then('the app should do nothing')
+When('the cell: {string} don\'t have mine')
+Then('the app should check all the adjacent cells')
+When('the cell: {string} don\'t have adjacent mines')
+
 // Then('the display should show the following value: {string}', async (string) => {
 // 	//const display = await page.locator('data-testid=display').innerText();
 // 	const display = await page.locator('data-testid=display').inputValue();
