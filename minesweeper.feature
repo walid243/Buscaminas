@@ -6,6 +6,7 @@ Feature: Minesweeper App
 
     "*" Mine
 
+    "-" new row
     To define the board display will use:
 
     "." covered cell
@@ -37,227 +38,254 @@ Feature: Minesweeper App
     "1-1" means, row 1 col 1
 
     Background: App opened.
-        Given a user opens the app
+        Given the user opens the app
 
-
-    Scenario: uncover a mined cell is game over
-        Given the user loads the following Mock Data: "*o"
-        When a user uncover the cell: "1-1"
+    Scenario: All cells are covered on game load
+        Then all cells should be covered
+    @este
+    Scenario: Uncover a mined cell is game over
+        Given the user loads the following Mock Data: "o*o"
+        When the user uncover the cell: "1-2"
         Then is game over
 
-    Scenario: all cells are covered on game load
-        Then all cells should be covered
+    Scenario: Disable a cell > An uncovered cell should be disabled
+        Given the user loads the following Mock Data: "o*o"
+        When the user uncover the cell: "1-1"
+        Then the cell: "1-1" should be disabled
 
-@manual
-    Scenario: Game over > the timer should stop
-        Given the user loads the following Mock Data: "*o"
-        And a user uncover the cell: "1-2"
-        And the user wait for 3 seconds
-        When a user uncover the cell: "1-1"
-        Then the timer should stop
+    Scenario: Tagging > A user can tag as mined a cell when suspects that the cell contains a mine. Adding the mined symbol
+        When the user tag the cell: "1-1" as suspected
+        Then the cell: "1-1" should show the following symbol: "!"
 
-    Scenario: Game over > all cells should be disabled
+    Scenario: Tagging > When a user try to tag a suspected cell again as suspected should do nothing
+        Given the user tagged the cell: "1-1" as suspected
+        When the user tag the cell: "1-1" as suspected
+        Then the cell: "1-1" should show the following symbol: "!"
+
+    Scenario: Tagging > A user can tag as posible mined cell when he is not shure if it is mined. Adding the posible mine symbol
+        When the user tag the cell: "1-1" as questionable
+        Then the cell: "1-1" should show the following symbol: "!"
+
+    Scenario: Tagging > When a user try to tag a questionable cell as questionable should do nothing
+        Given the user tagged the cell: "1-1" as questionable
+        When the user tag the cell: "1-1" as questionable
+        Then the cell: "1-1" should show the following symbol: "!"
+
+    Scenario: Untagging > The user can untag a suspected cell when he is sure that the cell it's not mined
+        Given the user tagged the cell: "1-1" as suspected
+        When the user untag the cell: "1-1"
+        Then the cell: "1-1" should show the following symbol: "."
+
+    Scenario: Untagging > The user can untag a questionable cell when he is sure that the cell it's not mined
+        Given the user tagged the cell: "1-1" as questionable
+        When the user untag the cell: "1-1"
+        Then the cell: "1-1" should show the following symbol: "."
+
+    Scenario: Untagging > When a user try to untag a cell without any tag the app sould do nothing
+        When the user untag the cell: "1-1"
+        Then the cell: "1-1" should show the following symbol: "."
+
+    Scenario: Game over > The cells with mine not tagged as suspected should be uncovered at game over
+        Given the user loads the following Mock Data: "**o-*o*"
+        When the user uncover the cell: "1-1"
+        Then board display should be: "**.-*.*"
+
+    Scenario: Game over > The cells with mine correctly tagged as suspected should not uncover at game over
+        Given the user loads the following Mock Data: "**o-*o*"
+        And the user tagged the cell: "1-1" as suspected
+        And the user tagged the cell: "2-1" as suspected
+        When the user uncover the cell: "1-2"
+        Then board display should be: "!*.-!.*"
+
+    Scenario: Game over > The cells with no mine tagged as suspected should show the incorrectly tagged cell value at game over
+        Given the user loads the following Mock Data: "**o-*o*"
+        And the user tagged the cell: "1-3" as suspected
+        When the user uncover the cell: "1-2"
+        Then board display should be: "**x-*.*"
+
+    Scenario: Game over > When is game over all cells should be disabled
         Given the user loads the following Mock Data: "**0"
         When the user uncover the cell: "1-1"
         Then all cells should be disabled
 
-    Scenario Outline: Choose difficulty
-        When a user click on "<wantedDifficulty>"
-        Then difficulty should be "<wantedDifficulty>"
-        And the app should restore to "<wantedDifficulty>" default state
+    Scenario: Game win > When the user uncover all cells without mine the game should end
+        Given the user loads the following display Mock Data: "o*o"
+        And the user uncovered the cell: "1-1"
+        When the user uncover the cell: "1-3"
+        Then the app should disable all cells
 
-        Examples:
-            | wantedDifficulty |
-            | easy             |
-            | meddium          |
-            | hard             |
+    Scenario: Game win > When the user win uncovering all cells with no mine and without tagging any mined cell as suspected then the mined cells should be tagged as suspected
+        Given the user loads the following Mock Data: "o*o"
+        And the user uncovered the cell: "1-1"
+        When the user uncover the cell: "1-3"
+        Then board display should be: "0!0"
 
-    Scenario Outline: Default state in each difficulty
-        When difficulty is "<currentDifficulty>"
-        Then posible remining mines should be "<posibleRemainingMines>"
-        And map width should be "<mapWidth>"
-        And map height should be "<mapHeight>"
-        And timer should be null
+    Scenario: Timer > The timer default state should be empty
+        Then timer should be empty
 
-        Examples:
-            | currentDifficulty | posibleRemainingMines   | mapWidth | mapHeight |
-            | easy              | 10                      | 8        | 8         |
-            | meddium           | 40                      | 16       | 16        |
-            | hard              | 99                      | 30       | 16        |
+    Scenario: Timer > When the users first move is uncover a cell then the timer should start with value 0
+        When the user uncover the cell: "1-1"
+        Then timer should display: "0"
+
+    Scenario: Timer > When the users first move is tag a cell as suspected then the timer should start with value 0
+        When the user tag the cell: "1-1" as suspected
+        Then timer should display: "0"
+
+    Scenario: Timer > When the users first move is tag a cell as questionable then the timer should start with value 0
+        When the user tag the cell: "1-1" as questionable
+        Then timer should display: "0"
+
+    @manual
+    Scenario: Timer > When the user uncover a cell, after 2 seconds from timer start the timer display value should be 2
+        Given the user loads the following Mock Data: "o*o"
+        When the user uncover the cell: "1-1"
+        Then after 2 seconds await the timer should display "2"
+
+    @manual
+    Scenario: Timer > When the user tag a cell as suspected, after 2 seconds from timer start the timer display value should be 2
+        When the user tag the cell: "1-1" as suspected
+        Then after 2 seconds await the timer should display "2"
+
+    @manual
+    Scenario: Timer > When the user tag a cell as questionable, after 2 seconds from timer start the timer display value should be 2
+        When the user tag the cell: "1-1" as questionable
+        Then after 2 seconds await the timer should display "2"
+
+    @manual
+    Scenario: Timer > Timer should stop at game over
+        Given the user loads the following Mock Data: "o*o"
+        When the user uncover the cell: "1-2"
+        Then after 2 seconds await the timer should display "0"
+
+    @manual
+    Scenario: Timer > Timer should stop at game win
+        Given the user loads the following Mock Data: "o*o"
+        And the user uncovered the cell: "1-3"
+        And the app await 2 seconds
+        When the user uncover the cell: "1-1"
+        Then after 2 seconds await the timer should display "2"
+
+    Scenario:Mine counter > The mine counter should decrease by 1 for every cell tagged as suspected
+        Given mine counter display: "10"
+        When the user tagged the cell: "1-1" as suspected
+        Then mine conter should display: "9"
+
+    Scenario:Mine counter > The mine counter can have negative values if the user tag as suspected more cells than mines on board
+        Given the user tagged the cell: "1-1" as suspected
+        And mine counter display: "0"
+        When the user tag the cell: "1-2" as suspected cell
+        Then mine counter should display: "-1"
+
+    Scenario: Mine counter > The mine counter should increase when the user change a cell tag from suspected to questionable
+        Given the user tagged the cell: "1-1" as suspected
+        And mine counter display: "0"
+        When the user tag the cell: "1-1" as questionable
+        Then mine counter should display: "1"
+
+    Scenario: Mine counter > The mine counter should increase when the user untag a suspected cell
+        Given the user tagged the cell: "1-1" as suspected
+        And mine counter display: "0"
+        When the user untag the cell: "1-1"
+        Then mine counter should display: "1"
+
+    Scenario: Mine counter > The mine counter should not change when the user untag a cell tagged as questionable
+        Given the user loads the following Mock Data: "o*o"
+        And the user tagged the cell: "1-1" as questionable
+        And mine counter display: "1"
+        When the user untag the cell: "1-1"
+        Then mine counter should display: "1"
+
+    Scenario: Mine counter > The mine counter should increase when the user uncover a incorrectly tagged cell as suspected
+        Given the user tagged the cell: "1-1" as suspected
+        And mine counter display: "0"
+        When the user uncover the cell: "1-1"
+        Then mine counter should display: "1"
 
 
-    Scenario: Reset button
-        When a user press reset button
+    Scenario: Default state
+        Then board width should be "8"
+        And board height should be "8"
+        And mine counter should display "10"
+        And timer should be empty
+        And all cells should be covered
+
+    Scenario: Reset > When the user uses the reset then the app should restore to default state
+        Given the user loads the following Mock Data: "o*o"
+        And the user tagged the cell: "1-1"
+        And the user uncovered the cell: "1-3"
+        When the user uses the reset
         Then the app should restore to default state
 
-    Scenario: Timer start > uncovering a cell
-        Given the user loads the following Mock Data: "o*o"
-        When a user uncover the cell: "11"
-        Then timer should start on: "0"
-
-    Scenario: Timer start > tagging a cell as suspected
-        Given the user loads the following Mock Data: "o*o"
-        When a user tag the cell: "11" as suspected
-        Then timer should start on: "0"
-
-    Scenario: Timer start > tagging a cell as questionable
-        Given the user loads the following display Mock Data: "..."
-        When a user tag the cell: "11" as questionable
-        Then timer should start on: "0"
-        And timer should increase by "1" for each second
-
-    Scenario: Timer stop > game over
-        Given the user loads the following display Mock Data: "0.."
-        And the user loads the following Mock Data: "o*o"
-        And timer count is: "2"
-        When a user uncover the cell: "12"
-        Then timer should stop at: "2"
-
-    Scenario: Timer stop > game win
-        Given the user loads the following display Mock Data: "0.."
-        And the user loads the following Mock Data: "o*o"
-        And timer count is: "2"
-        When a user uncover the cell: "13"
-        Then timer should stop at: "2"
-
-    Scenario: Tagging > suspected cell
-        Given the user loads the following display Mock Data: "..."
-        When a user tag the cell: "11" as suspected
-        Then board display should be: "!.."
-
-    Scenario: Tagging > questionable cell
-        Given the user loads the following display Mock Data: "..."
-        When a user tag the cell: "11" as questionable
-        Then board display should be: "?.."
-
-    Scenario: Untagging > suspected cell
-        Given the user loads the following display Mock Data: "!.."
-        When a user untag the cell: "11"
-        Then board display should be: "..."
-
-    Scenario: Untagging > questionable cell
-        Given the user loads the following display Mock Data: "?.."
-        When a user untag the cell: "11"
-        Then board display should be: "..."
-
-    Scenario: Game over > the not tagged as suspected cells with mine should be uncovered 
-        Given the user loads the following Mock Data: "*o-**"
-        When a user uncover the cell: "1-1"
-        Then board display should be: "*.-**"
-        
-    Scenario: Game over > the correctly tagged cells as suspected shouldn't be uncovered
-        Given the user loads the following Mock Data: "**0-*0*"
-        And the user tag as suspected the cell: "1-1"
-        And the user tag as suspected the cell: "2-1"
-        When the user uncover the cell: "1-2"
-        Then board display should be: "!*.-!.*"
-
-    Scenario: Game over > the wrongly tagged cells as suspected should be uncovered
-        Given the user loads the following Mock Data: "**0-*0*"
-
-    Scenario: Game over > value that will show the cells tagged incorrectly as suspected at game over
-        Given the user loads the following display Mock Data: "!.!"
-        And the user loads the following Mock Data: "o**"
-        When a user uncover the cell: "12"
-        Then board display should be: "x*!"
-
-    Scenario: Game win > uncovering all cells with no mine and without tagging any mined cell as suspected
-        Given the user loads the following display Mock Data: "0.."
-        And the user loads the following Mock Data: "o*o"
-        When a user uncover the cell: "13"
-        Then timer should stop
-        And board display should be: "0!0"
-
-    Scenario:Mine counter > decrease posible remaining mines counter
-        Given the user loads the following display Mock Data: "..."
-        And board have "1" mines
-        And posible remaining mines is: "1"
-        When a user tag the cell: "11" as suspected cell
-        Then posible remaining mines should be: "0"
-
-    Scenario: Mine counter > increase posible remaining mines counter changing from suspected tag to questionable tag
-        Given the user loads the following display Mock Data: "!.."
-        And board have "1" mines
-        And posible remaining mines is: "0"
-        When a user tag the cell: "11" as questionable
-        Then posible remaining mines should be: "1"
-
-    Scenario: Mine counter > increase posible remaining mines counter untagging a cell tagged as suspeted
-        Given the user loads the following display Mock Data: "!.."
-        And board have "1" mines
-        And posible remaining mines is: "0"
-        When a user untag the cell: "11"
-        Then posible remaining mines should be: "1"
-
-    Scenario: Mine counter > posible remaining mines counter shuldn't change untagging a cell tagged as questionable
-        Given the user loads the following display Mock Data: "?.."
-        And board have "1" mines
-        And posible remaining mines is: "1"
-        When a user untag the cell: "11"
-        Then posible remaining mines should be: "1"
-
-    Scenario: Mine counter > Increase mine counter uncovering a cell tagged as suspected
-        Given the user loads the following display Mock Data: "!.."
-        And the user loads the following Mock Data: "o*o"
-        And board have "1" mines
-        And posible remaining mines is: "0"
-        When a user uncover the cell: "11"
-        Then posible remaining mines should be: "1"
-
-    Scenario: Uncover a cell
-        Given the user loads the following display Mock Data: "..."
-        And the user loads the following Mock Data: "o*o"
-        When a user uncover the cell: "11"
-        Then board display should be: "1.."
-        And the cell: "11" should be disabled
-
-    Scenario: trying to uncover an uncovered cell
-        Given the user loads the following display Mock Data: "1.."
-        And the user loads the following Mock Data: "o*o"
-        When a user uncover the cell: "11"
-        Then the app should do nothing
-
-    Scenario: trying to tag as suspected an uncovered cell
-        Given the user loads the following display Mock Data: "1.."
-        And the user loads the following Mock Data: "o*o"
-        When a user tag the cell: "11" as suspected
-        Then the app should do nothing
-
-    Scenario: trying to tag as questionable an uncovered cell
-        Given the user loads the following display Mock Data: "1.."
-        And the user loads the following Mock Data: "o*o"
-        When a user tag the cell: "11" as questionable
-        Then the app should do nothing
-
-    Scenario Outline: Uncover not mined cell > the cell shows the number of adjacent mines
+    Scenario Outline: Uncover not mined cell > If it has adjacent mines then the cell should display the count of adjacent mines to it
         Given the user loads the following Mock Data: "<boardData>"
-        When a user uncover the cell: "<cellToUncover>"
-        Then the cell "<cellToUncover>" should show: "<adjacentMineCount>" 
-
+        When the user uncover the cell: "2-2"
+        Then the cell "2-2" should show: "<AdjacentMinesCount>"
 
         Examples:
-            | boardData   | cellToUncover  | count |
-            | o**-ooo-ooo | 1-1            | 1     |
-            | ***-ooo-ooo | 2-3            | 2     |
-            | oo*-o*o-o*o | 2-3            | 3     |
-            | **o-o*o-*oo | 2-1            | 4     |
-            | oo*-***-*o* | 3-2            | 5     |
-            | *o*-*o*-*o* | 2-2            | 6     |
-            | ***-*o*-*o* | 2-2            | 7     |
-            | ***-*o*-*** | 2-2            | 8     |
-            
-    Scenario Outline: Uncover not mined cell > cell empty > cell without adjacent mines
+            | boardData   | AdjacentMinesCount |
+            | o*o-ooo-ooo | 1                  |
+            | **o-ooo-ooo | 2                  |
+            | ***-ooo-ooo | 3                  |
+            | ***-*oo-ooo | 4                  |
+            | ***-*o*-ooo | 5                  |
+            | ***-*o*-*oo | 6                  |
+            | ***-*o*-**o | 7                  |
+            | ***-*o*-*** | 8                  |
 
-    Scenario Outline: Uncover empty cell > Uncover the adjacent cells
-        Given the user loads the following Mock Data: "<boardData>"
-        When a user uncover the cell: "11"
-        And the cell: "11" don't have mine
-        And the cell: "11" don't have adjacent mines
-        Then the board display should be: "<newBoardDisplay>"
+    Scenario: Uncover not mined cell and without adjacent mines > cell empty
+        Given the user loads the following Mock Data: "ooo-ooo-ooo-***"
+        When the user uncover the cell: "2-2"
+        Then the cell "2-2" should be empty
 
-        Examples:
-            | boardDisplay | boardData   | newBoardDisplay |
-            | ...-...-...  | oo*-ooo-ooo | 01.-011-000     |
-            | ...-...-...  | oo*-oo*-ooo | 02.-02.-01.     |
+    Scenario: Uncover a cell empty > uncover the adjacent cells
+        Given the user loads the following Mock Data: """
+        ooo
+        ooo
+        ooo
+        ***
+            """
+        When the user uncover the cell: "2-2"
+        Then the board display should be: """
+            000
+            000
+            232
+            ...
+            """
 
-            SCENARIO? Adjacent mines revealed > If is empty, reveal
+    Scenario Outline: Uncover empty cell > When an empty cell is uncovered by a neighbour cell then uncover all adjacent cells to it
+        Given the user loads the following Mock Data: "ooo-ooo-oo*"
+        When the user uncover the cell: "1-1"
+        Then the app should uncover all adjacent cells to "1-2"
+        And the app should uncover all adjacent cells to "2-1"
+        And the app should uncover all adjacent cells to "2-1"
+        And the board display should be: """
+            000
+            011
+            01.
+            """
+
+
+    Scenario: Disabling cell > when a cell is uncovered by another cell that cell should be disabled
+        Given the user loads the following Mock Data: "ooo-oo*-ooo"
+        When the user uncovered the cell: "1-1"
+        Then the app should disable all cells uncovered by the cell: "1-1"
+
+    Scenario: Mouse > How to uncover a cell with mouse
+        Given the user loads the following Mock Data: "o*o"
+        When the user uses mouse "leftClick" button on the cell: "1-1"
+        Then the cell "1-1" should be uncovered
+
+    Scenario: Mouse > How to tag a cell as suspected with mouse
+        When the user uses mouse "rightClick" button on the cell: "1-1"
+        Then the cell "1-1" should be tagged as suspected
+
+    Scenario: Mouse > How to tag a cell as questionable with mouse
+        Given the user uses mouse "rightClick" button on the cell: "1-1"
+        When the user uses mouse "rightClick" button on cell "1-1"
+        Then the cell "1-1" should be tagged as questionable
+
+    Scenario: Mouse > How to untag a cell with mouse
+        Given the user uses mouse "rightClick" button on the cell: "1-1"
+        And the user uses mouse "rightClick" button on the cell: "1-1"
+        When the user uses mouse "rightClick" button on cell "1-1"
+        Then the cell "1-1" should be untagged
