@@ -6,8 +6,8 @@ setDefaultTimeout(60000);
 // launch the browser
 BeforeAll(async () => {
   global.browser = await chromium.launch({
-    headless: true,             //esto es pa qe no se vea en el navegador, pero si pones false, te lo abre en el nav y puedes ver paso a paso como va haciendo el test, pa detectar errores
-    slowMo: 1,                  //si pones 1000 es 1s. Es decir, por ejemplo, en un test de poner nums, te pondra uno por segundo
+    headless: false,             //esto es pa qe no se vea en el navegador, pero si pones false, te lo abre en el nav y puedes ver paso a paso como va haciendo el test, pa detectar errores
+    slowMo: 1000,                  //si pones 1000 es 1s. Es decir, por ejemplo, en un test de poner nums, te pondra uno por segundo
   });
 });
  
