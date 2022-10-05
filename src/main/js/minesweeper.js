@@ -1,55 +1,82 @@
-const mockData = new URLSearchParams(window.location.search).get("mockData");
+const boardData = getBoardData();
 
-// createBoard()
-moakBoard();
-function moakBoard() {
-  let data = mockData.split("-");
-  let board = document.createElement("table");
-  board.setAttribute("id", "board");
-  let row;
-  let cell;
-  let k = 1;
-  for (let i = 0; i < data.length; i++) {
-    row = document.createElement("tr");
-    row.setAttribute("id", i + 1);
-    for (let j = 0; j < data[i].length; j++) {
-      console.log(data[i][j]);
-      cell = document.createElement("td");
-      cell.classList.add("covered");
-      cell.setAttribute("id", i + 1 + "-" + (j + 1));
-      cell.innerText = data[i][j];
-      row.appendChild(cell);
-      k++;
-    }
-    board.appendChild(row);
-  }
-  document.body.appendChild(board);
+var live = true;
+createBoard();
+addEvent();
+function getLiveStatus(){
+  document.getElementById("board").value = live
+  return live;
 }
-// function coverCells() {
-//   let board = document.getElementById("board");
-//   board.childNodes.forEach(row => row.childNodes.forEach(cell => cell.classList.add("covered")));
-// }
+
+function getBoardData() {
+  if (hasMockParam()){
+   let mockParam = new URLSearchParams(window.location.search).get('mockData')
+    return mockParam.split('-')
+  }  
+  else {
+    return null;
+  }
+}
+
+function hasMockParam(){
+  return new URLSearchParams(window.location.search).has('mockData') ?  true : false;
+}
 
 function createBoard() {
-  console.log(mockData);
-  let body = document.body;
-  let board = document.createElement("table");
-  board.setAttribute("id", "board");
-  let row;
-  let cell;
-  let k = 1;
-  for (let i = 1; i <= 8; i++) {
-    row = document.createElement("tr");
-    row.setAttribute("id", i);
-    for (let j = 1; j <= 8; j++) {
-      cell = document.createElement("td");
-      cell.setAttribute("id", i + "-" + j);
-      cell.innerText = k;
-      // data[ij] = boardData[k];
-      row.appendChild(cell);
-      k++;
-    }
-    board.appendChild(row);
+
+  let height = boardData.length;
+  let width
+  let board = document.getElementById('board');
+  for (let i = 1; i <= height; i++) {
+    width = boardData[i-1].length;
+    board.appendChild(createRow(i, width));
   }
-  body.appendChild(board);
+}
+
+
+function createRow(id, width) {
+  let row = document.createElement("tr");
+  row.setAttribute("id", id);
+  for (let j = 1; j <= width; j++) {
+    row.appendChild(createCell(j, id));
+  }
+
+  return row;
+}
+
+function createCell(id, rowId) {
+  let cell = document.createElement("td");
+  cell.setAttribute("id", rowId + "-" + id);
+  cell.setAttribute("data-testid", rowId + "-" + id);
+  cell.classList.add("cell", "covered");
+  return cell;
+}
+
+function uncoverCell(id){
+  let cell = document.getElementById(id);
+  let idPart = id.split("-")
+  let row = parseInt(idPart[0])-1
+  let col = parseInt(idPart[1])-1
+  cell.classList.remove("covered");
+  cell.classList.add("uncovered");
+  cell.setAttribute("disabled", true);
+  cell.innerText = boardData[row][col];
+}
+
+function addEvent(){
+  let elements = document.getElementsByClassName("cell");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].addEventListener("click", function(){
+      uncoverCell(this.getAttribute("id"));
+    });
+  }
+}
+
+function gameOver(){
+  let board = document.getElementById("board");
+  board.setAttribute("gameover", true);
+}
+
+function isMined(value){
+  return value == "*"
 }

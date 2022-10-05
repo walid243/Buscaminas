@@ -5,22 +5,18 @@ const { expect } = require("@playwright/test");
 var url = "http://127.0.0.1:5500/src/main/html/minesweeper.html";
 // const url='https://walid243.github.io/minesweeper_app/src/main/html/minesweeper.html';
 
-async function mapBoardData(boardData) {
-  secretData = createBoard(boardData);
-}
 
-function uncoverCell(cell) {
-  cell.classList.toggle()
+async function uncoverCell(cellId) {
+  await page.locator(`[data-testid="${cellId}"]`).click({ button: 'left'});
 }
 
 Given("the user opens the app", async () => {
   await page.goto(url);
 });
 
-Given("the user loads the following Mock Data: {string}", async (string) => {
-  console.log(string);
-  url = new URL("?boardData="+string, url)
-  await page.goto(url.toString());
+Given("the user loads the following Mock Data: {string}", async (mockData) => {
+  url += "?mockData=" + mockData
+  await page.goto(url);
 });
 // Given("the user tagged the cell: {string} as suspected");
 // Given("the user tagged the cell: {string} as questionable");
@@ -29,8 +25,8 @@ Given("the user loads the following Mock Data: {string}", async (string) => {
 // Given("board have {string} mines");
 // Given("posible remaining mines is: {string}");
 // Given("the app uncovered all adjacent cells");
-When("the user uncover the cell: {string}", async (string) => {
-  uncoverCell(string);
+When("the user uncover the cell: {string}", async (cellId) => {
+  uncoverCell(cellId);
 });
 // When("the cell: {string} don't have adjacent mines");
 // When("the user press on {string}");
@@ -46,7 +42,8 @@ When("the user uncover the cell: {string}", async (string) => {
 //   expect(live).toBe(false);
 // });
 Then("is game over", async () => {
-  return true;
+   let text = await page.locator("text=*").innerText();
+   expect(text).toBe("*")
 });
 // Then("timer should stop");
 // Then ("the app sould uncover all adjacent cells")

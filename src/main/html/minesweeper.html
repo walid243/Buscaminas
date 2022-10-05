@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <title>Minesweeper</title>
     <link rel="stylesheet" href="../css/minesweeper.css">
-    <script src="../js/minesweeper.js" defer></script>
+    <script src="../js/minesweeper.js" type="module" defer></script>
 </head>
 <body>
-    
+    <table id="board" data-testid="board">
+        <tr id="head"data-testid="head">
+            <th id="counter" data-testid="counter"></th>
+            <th id="reset" data-testid="reset"></th>
+            <th id="timer" data-testid="timer"></th>
+        </tr>
+    </table>
 </body>
 </html>

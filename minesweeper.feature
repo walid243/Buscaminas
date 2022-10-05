@@ -37,11 +37,12 @@ Feature: Minesweeper App
 
     "1-1" means, row 1 col 1
 
-    Background: App opened.
+    Background: App opened
         Given the user opens the app
 
     Scenario: All cells are covered on game load
         Then all cells should be covered
+        
     @este
     Scenario: Uncover a mined cell is game over
         Given the user loads the following Mock Data: "o*o"
@@ -201,7 +202,6 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-1"
         Then mine counter should display: "1"
 
-
     Scenario: Default state
         Then board width should be "8"
         And board height should be "8"
@@ -238,32 +238,39 @@ Feature: Minesweeper App
         Then the cell "2-2" should be empty
 
     Scenario: Uncover a cell empty > uncover the adjacent cells
-        Given the user loads the following Mock Data: """
+        Given the user loads the following Mock Data: 
+        """
         ooo
         ooo
         ooo
         ***
-            """
+        """
         When the user uncover the cell: "2-2"
-        Then the board display should be: """
-            000
-            000
-            232
-            ...
-            """
+        Then the board display should be: 
+        """
+        000
+        000
+        232
+        ...
+        """
 
-    Scenario Outline: Uncover empty cell > When an empty cell is uncovered by a neighbour cell then uncover all adjacent cells to it
-        Given the user loads the following Mock Data: "ooo-ooo-oo*"
+    Scenario: Uncover empty cell > When an empty cell is uncovered by a neighbour cell then uncover all adjacent cells to it
+        Given the user loads the following Mock Data: 
+        """
+        ooo
+        ooo
+        oo*
+        """
         When the user uncover the cell: "1-1"
         Then the app should uncover all adjacent cells to "1-2"
         And the app should uncover all adjacent cells to "2-1"
         And the app should uncover all adjacent cells to "2-1"
-        And the board display should be: """
-            000
-            011
-            01.
-            """
-
+        And the board display should be: 
+        """
+        000
+        011
+        01.
+        """
 
     Scenario: Disabling cell > when a cell is uncovered by another cell that cell should be disabled
         Given the user loads the following Mock Data: "ooo-oo*-ooo"
