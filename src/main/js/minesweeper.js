@@ -23,12 +23,11 @@ function hasMockParam(){
 }
 
 function createBoard() {
-
-  let height = boardData.length;
+  let height = boardData!=null? boardData.length: 8;
   let width
   let board = document.getElementById('board');
   for (let i = 1; i <= height; i++) {
-    width = boardData[i-1].length;
+    width = boardData!=null? boardData[i-1].length: 8;
     board.appendChild(createRow(i, width));
   }
 }
@@ -60,14 +59,28 @@ function uncoverCell(id){
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
   cell.setAttribute("disabled", true);
-  cell.innerText = boardData[row][col];
+  cell.innerText = boardData != null ?boardData[row][col]: "";
+  console.log("sigue vivo");
 }
-
 function addEvent(){
+  addLeftClickEvent()
+  addRightClickEvent()
+}
+function addLeftClickEvent(){
+  let elements = document.getElementsByClassName("cell");
+  console.log("si");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].addEventListener("click", function(Event){
+      uncoverCell(this.getAttribute("id"));
+    });
+  }
+}
+function addRightClickEvent(){
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
-    elements[i].addEventListener("click", function(){
-      uncoverCell(this.getAttribute("id"));
+    elements[i].addEventListener("contextmenu", function(Event){
+      Event.preventDefault();
+      tagAsSuspected(this.getAttribute("id"));
     });
   }
 }
@@ -79,4 +92,9 @@ function gameOver(){
 
 function isMined(value){
   return value == "*"
+}
+
+function tagAsSuspected(cellId){
+  let cell = document.getElementById(cellId);
+  cell.innerText = "!";
 }

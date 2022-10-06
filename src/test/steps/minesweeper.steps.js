@@ -9,6 +9,9 @@ var url = "http://127.0.0.1:5500/src/main/html/minesweeper.html";
 async function uncoverCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'left'});
 }
+async function tagAsSuspected(cellId) {
+  await page.locator(`[data-testid="${cellId}"]`).click({ button: 'right'});
+}
 
 Given("the user opens the app", async () => {
   await page.goto(url);
@@ -18,7 +21,9 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
   url += "?mockData=" + mockData
   await page.goto(url);
 });
-// Given("the user tagged the cell: {string} as suspected");
+// Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
+//   await tagAsSuspected(cellId);
+// });
 // Given("the user tagged the cell: {string} as questionable");
 // Given("the user uncovered the cell: {string}")
 // Given("difficulty is {string}");
@@ -33,7 +38,9 @@ When("the user uncover the cell: {string}", async (cellId) => {
 // When("the user press reset button");
 // When("the app found the empty cell: {string} uncovered by {string}")
 // When ("the app uncover all adjacent cells")
-// When("the user tag the cell: {string} as suspected");
+When("the user tag the cell: {string} as suspected", async (cellId) => {
+  await tagAsSuspected(cellId);
+});
 // When("the user tag the cell: {string} as questionable");
 // When("timer count is: {string}");
 // When("the user untag the cell: {string}");
@@ -72,5 +79,8 @@ Then("the cell: {string} should be disabled", async (cellId) => {
 // Then("all cells should be disabled");
 // Then("the app should do nothing");
 // Then("the app should check all the adjacent cells");
-// Then("the cell {string} should show: {string}");
-
+Then("the cell: {string} should show the following symbol: {string}" , async (cellId, symbol) => {
+  let locator = await page.locator(`[data-testid="${cellId}"]`);
+  let cellSymbol = await locator.innerText();
+  expect(cellSymbol).toBe(symbol);
+});

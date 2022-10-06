@@ -49,12 +49,13 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-2"
         Then is game over
     
-    @este
+    @done
     Scenario: Disable a cell > An uncovered cell should be disabled
         Given the user loads the following Mock Data: "o*o"
         When the user uncover the cell: "1-1"
         Then the cell: "1-1" should be disabled
 
+    @este
     Scenario: Tagging > A user can tag as mined a cell when suspects that the cell contains a mine. Adding the mined symbol
         When the user tag the cell: "1-1" as suspected
         Then the cell: "1-1" should show the following symbol: "!"
