@@ -21,9 +21,9 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
   url += "?mockData=" + mockData
   await page.goto(url);
 });
-// Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
-//   await tagAsSuspected(cellId);
-// });
+Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
+  await tagAsSuspected(cellId);
+});
 // Given("the user tagged the cell: {string} as questionable");
 // Given("the user uncovered the cell: {string}")
 // Given("difficulty is {string}");

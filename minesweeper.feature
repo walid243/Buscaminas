@@ -55,11 +55,12 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-1"
         Then the cell: "1-1" should be disabled
 
-    @este
+    @done
     Scenario: Tagging > A user can tag as mined a cell when suspects that the cell contains a mine. Adding the mined symbol
         When the user tag the cell: "1-1" as suspected
         Then the cell: "1-1" should show the following symbol: "!"
 
+    @este
     Scenario: Tagging > When a user try to tag a suspected cell again as suspected should do nothing
         Given the user tagged the cell: "1-1" as suspected
         When the user tag the cell: "1-1" as suspected
