@@ -43,12 +43,13 @@ Feature: Minesweeper App
     Scenario: All cells are covered on game load
         Then all cells should be covered
         
-    @este
+    @done
     Scenario: Uncover a mined cell is game over
         Given the user loads the following Mock Data: "o*o"
         When the user uncover the cell: "1-2"
         Then is game over
-
+    
+    @este
     Scenario: Disable a cell > An uncovered cell should be disabled
         Given the user loads the following Mock Data: "o*o"
         When the user uncover the cell: "1-1"

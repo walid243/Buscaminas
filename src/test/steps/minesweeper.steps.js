@@ -26,7 +26,7 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
 // Given("posible remaining mines is: {string}");
 // Given("the app uncovered all adjacent cells");
 When("the user uncover the cell: {string}", async (cellId) => {
-  uncoverCell(cellId);
+  await uncoverCell(cellId);
 });
 // When("the cell: {string} don't have adjacent mines");
 // When("the user press on {string}");
@@ -43,7 +43,7 @@ When("the user uncover the cell: {string}", async (cellId) => {
 // });
 Then("is game over", async () => {
    let text = await page.locator("text=*").innerText();
-   expect(text).toBe("*")
+    expect(text).toBe("*")
 });
 // Then("timer should stop");
 // Then ("the app sould uncover all adjacent cells")
@@ -63,7 +63,12 @@ Then("is game over", async () => {
 // Then("timer should start on: {string}");
 // Then("timer should increase by {string} for each second");
 // Then("posible remaining mines should be: {string}");
-// Then("the cell: {string} should be disabled");
+Then("the cell: {string} should be disabled", async (cellId) => {
+  let locator = await page.locator(`[data-testid="${cellId}"]`);
+  let cellAvailability = await locator.getAttribute("disabled")
+  console.log(cellAvailability);
+  expect(cellAvailability).toBe("true");
+});
 // Then("all cells should be disabled");
 // Then("the app should do nothing");
 // Then("the app should check all the adjacent cells");
