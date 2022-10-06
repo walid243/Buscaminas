@@ -19,11 +19,6 @@ body {
 	color: #ffffff;
 }
 
-a:link		{ color: #ccccff }
-a:active	{ color: #993333 }
-a:visited	{ color: #ccccff }
-a:hover		{ color: #ffff00 }
-
 #board {
 	display: inline-block;
 	padding-left: 1em;
@@ -46,7 +41,7 @@ a:hover		{ color: #ffff00 }
 	-o-user-select: none;
 	-webkit-user-select: none;
 }
-.sq, .score {
+.cell, .score {
 	margin: 0px;
 	border: 2px solid;
 	border-color: #eeeeee #999999 #999999 #eeeeee;
@@ -55,7 +50,7 @@ a:hover		{ color: #ffff00 }
 	vertical-align: middle;
 	text-align: center;
 }
-.sq {
+.cell {
 	box-sizing: border-box; /* avoids jumpiness when zoomed */
 	width: 24px;
 	max-width: 24px; /* avoids being resized if text is too long (iOS) */
@@ -68,7 +63,7 @@ a:hover		{ color: #ffff00 }
 	line-height: 18px;
 	cursor: pointer;
 }
-.sqExposed {
+.uncovered {
 	background-color: #bbbbbb;
 	border-width: 1px;
 	border-color: #999999;

@@ -63,24 +63,34 @@ function uncoverCell(id){
   console.log("sigue vivo");
 }
 function addEvent(){
-  addLeftClickEvent()
-  addRightClickEvent()
+  addClickEvent()
 }
-function addLeftClickEvent(){
+// function addClickEvent(){
+//   let elements = document.getElementsByClassName("cell");
+//   console.log("si");
+//   for (let i = 0; i < elements.length; i++) {
+//     elements[i].addEventListener("click", function(){
+//       uncoverCell(this.getAttribute("id"));
+//     });
+//   }
+// }
+function addClickEvent(){
   let elements = document.getElementsByClassName("cell");
-  console.log("si");
   for (let i = 0; i < elements.length; i++) {
     elements[i].addEventListener("click", function(Event){
-      uncoverCell(this.getAttribute("id"));
-    });
-  }
-}
-function addRightClickEvent(){
-  let elements = document.getElementsByClassName("cell");
-  for (let i = 0; i < elements.length; i++) {
-    elements[i].addEventListener("contextmenu", function(Event){
-      Event.preventDefault();
-      tagAsSuspected(this.getAttribute("id"));
+      switch (Event.button) {
+        case 0:
+          uncoverCell(this.getAttribute("id"));
+          break;
+      
+        case 1:
+          tagAsQuestionable(this.getAttribute("id"));
+          break;
+        case 2:
+          Event.preventDefault();
+          tagAsSuspected(this.getAttribute("id"));
+          break;
+      }
     });
   }
 }
@@ -97,4 +107,9 @@ function isMined(value){
 function tagAsSuspected(cellId){
   let cell = document.getElementById(cellId);
   cell.innerText = "!";
+}
+
+function tagAsQuestionable(cellId){
+  let cell = document.getElementById(cellId);
+  cell.innerText = "?";
 }

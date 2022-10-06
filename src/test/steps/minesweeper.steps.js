@@ -12,6 +12,9 @@ async function uncoverCell(cellId) {
 async function tagAsSuspected(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'right'});
 }
+async function tagAsQuestionable(cellId) {
+  await page.locator(`[data-testid="${cellId}"]`).click({ button: 'right'});
+}
 
 Given("the user opens the app", async () => {
   await page.goto(url);
@@ -41,7 +44,9 @@ When("the user uncover the cell: {string}", async (cellId) => {
 When("the user tag the cell: {string} as suspected", async (cellId) => {
   await tagAsSuspected(cellId);
 });
-// When("the user tag the cell: {string} as questionable");
+When("the user tag the cell: {string} as questionable", async (cellId) => {
+  await tagAsQuestionable(cellId);
+});
 // When("timer count is: {string}");
 // When("the user untag the cell: {string}");
 // When("the cell: {string} don't have mine");
