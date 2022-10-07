@@ -27,7 +27,9 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
 Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
   await tagAsSuspected(cellId);
 });
-// Given("the user tagged the cell: {string} as questionable");
+Given("the user tagged the cell: {string} as questionable", async (cellId) => {
+  await tagAsQuestionable(cellId);
+});
 // Given("the user uncovered the cell: {string}")
 // Given("difficulty is {string}");
 // Given("board have {string} mines");

@@ -66,11 +66,12 @@ Feature: Minesweeper App
         When the user tag the cell: "1-1" as suspected
         Then the cell: "1-1" should show the following symbol: "!"
 
-    @this
+    @done
     Scenario: Tagging > A user can tag as posible mined cell when he is not shure if it is mined. Adding the posible mine symbol
         When the user tag the cell: "1-1" as questionable
         Then the cell: "1-1" should show the following symbol: "?"
-
+    
+    @done
     Scenario: Tagging > When a user try to tag a questionable cell as questionable should do nothing
         Given the user tagged the cell: "1-1" as questionable
         When the user tag the cell: "1-1" as questionable
