@@ -6,15 +6,16 @@ var url = "http://127.0.0.1:5500/src/main/html/minesweeper.html";
 // const url='https://walid243.github.io/minesweeper_app/src/main/html/minesweeper.html';
 
 
-async function uncoverCell(cellId) {
+async function leftClickOnCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'left'});
 }
-async function tagAsSuspected(cellId) {
+async function rightClickOnCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'right'});
 }
-async function tagAsQuestionable(cellId) {
+async function middleClickOnCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'middle'});
 }
+
 
 Given("the user opens the app", async () => {
   await page.goto(url);
@@ -25,10 +26,10 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
   await page.goto(url);
 });
 Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
-  await tagAsSuspected(cellId);
+  await rightClickOnCell(cellId);
 });
 Given("the user tagged the cell: {string} as questionable", async (cellId) => {
-  await tagAsQuestionable(cellId);
+  await middleClickOnCell(cellId);
 });
 // Given("the user uncovered the cell: {string}")
 // Given("difficulty is {string}");
@@ -36,7 +37,7 @@ Given("the user tagged the cell: {string} as questionable", async (cellId) => {
 // Given("posible remaining mines is: {string}");
 // Given("the app uncovered all adjacent cells");
 When("the user uncover the cell: {string}", async (cellId) => {
-  await uncoverCell(cellId);
+  await leftClickOnCell(cellId);
 });
 // When("the cell: {string} don't have adjacent mines");
 // When("the user press on {string}");
@@ -44,13 +45,18 @@ When("the user uncover the cell: {string}", async (cellId) => {
 // When("the app found the empty cell: {string} uncovered by {string}")
 // When ("the app uncover all adjacent cells")
 When("the user tag the cell: {string} as suspected", async (cellId) => {
-  await tagAsSuspected(cellId);
+  await rightClickOnCell(cellId);
 });
 When("the user tag the cell: {string} as questionable", async (cellId) => {
-  await tagAsQuestionable(cellId);
+  await middleClickOnCell(cellId);
 });
 // When("timer count is: {string}");
-// When("the user untag the cell: {string}");
+When("the user untag the suspected cell: {string}", async (cellId) => {
+  await rightClickOnCell(cellId);
+});
+When("the user untag the questionable cell: {string}", async (cellId) => {
+  await middleClickOnCell(cellId);
+});
 // When("the cell: {string} don't have mine");
 // Then("the game should end", async () => {
 //   expect(live).toBe(false);
@@ -90,4 +96,9 @@ Then("the cell: {string} should show the following symbol: {string}" , async (ce
   let locator = await page.locator(`[data-testid="${cellId}"]`);
   let cellSymbol = await locator.innerText();
   expect(cellSymbol).toBe(symbol);
+});
+Then("the cell: {string} should not show any symbol" , async (cellId) => {
+  let locator = await page.locator(`[data-testid="${cellId}"]`);
+  let cellSymbol = await locator.innerText();
+  expect(cellSymbol).toBe("");
 });
