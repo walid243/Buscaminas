@@ -77,7 +77,7 @@ function addEvent(){
 function addClickEvent(){
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
-    elements[i].addEventListener("click", function(Event){
+    elements[i].addEventListener("mousedown", function(Event){
       switch (Event.button) {
         case 0:
           uncoverCell(this.getAttribute("id"));
@@ -87,11 +87,13 @@ function addClickEvent(){
           tagAsQuestionable(this.getAttribute("id"));
           break;
         case 2:
-          Event.preventDefault();
           tagAsSuspected(this.getAttribute("id"));
           break;
       }
     });
+    elements[i].addEventListener("contextmenu", function(event) {
+      event.preventDefault()
+    })
   }
 }
 

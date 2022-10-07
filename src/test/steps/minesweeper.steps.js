@@ -13,7 +13,7 @@ async function tagAsSuspected(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'right'});
 }
 async function tagAsQuestionable(cellId) {
-  await page.locator(`[data-testid="${cellId}"]`).click({ button: 'right'});
+  await page.locator(`[data-testid="${cellId}"]`).click({ button: 'middle'});
 }
 
 Given("the user opens the app", async () => {
