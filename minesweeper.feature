@@ -72,7 +72,8 @@ Feature: Minesweeper App
         Given the user tagged the cell: "1-1" as suspected
         When the user untag the suspected cell: "1-1"
         Then the cell: "1-1" should not show any symbol
-
+    
+    @done
     Scenario: Untagging > The user can untag a questionable cell when he is sure that the cell it's not mined
         Given the user tagged the cell: "1-1" as questionable
         When the user untag the questionable cell: "1-1"
