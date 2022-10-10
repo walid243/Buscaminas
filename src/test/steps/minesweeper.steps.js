@@ -22,8 +22,8 @@ Given("the user opens the app", async () => {
 });
 
 Given("the user loads the following Mock Data: {string}", async (mockData) => {
-  url += "?mockData=" + mockData
-  await page.goto(url);
+  let mockUrl = url + "?mockData=" + mockData
+  await page.goto(mockUrl);
 });
 Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
   await rightClickOnCell(cellId);
