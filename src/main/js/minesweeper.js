@@ -53,14 +53,13 @@ function createCell(id, rowId) {
 
 function uncoverCell(id) {
   let cell = document.getElementById(id);
-  let idPart = id.split("-");
+  let idPart = getCellId(id);
   let row = parseInt(idPart[0]) - 1;
   let col = parseInt(idPart[1]) - 1;
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
   cell.setAttribute("disabled", true);
   cell.innerText = boardData != null ? boardData[row][col] : "";
-  console.log("sigue vivo");
 }
 function addEvent() {
   addClickEvent();
@@ -81,6 +80,10 @@ function addClickEvent() {
       switch (Event.button) {
         case 0:
           uncoverCell(this.getAttribute("id"));
+          if (isMined(this.innerText)) {
+            gameOver();
+            uncoverMines();
+          }
           break;
 
         case 1:
@@ -126,4 +129,25 @@ function tagAsQuestionable(cellId) {
 function untag(cellId) {
   let cell = document.getElementById(cellId);
   cell.innerText = "";
+}
+
+function uncoverMines() {
+  let elements = document.getElementsByClassName("cell");
+  let elementId
+  let idPart
+  let row
+  let col
+  for (let i = 0; i < elements.length; i++) {
+    elementId = elements[i].getAttribute("id")
+    idPart = getCellId(elementId);
+    row = parseInt(idPart[0]) - 1;
+    col = parseInt(idPart[1]) - 1;
+    if (isMined(boardData[row][col])) {
+      uncoverCell(elementId);
+    }
+  }
+}
+
+function getCellId(id){
+  return id.split("-");
 }

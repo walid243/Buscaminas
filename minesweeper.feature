@@ -79,7 +79,7 @@ Feature: Minesweeper App
         When the user untag the questionable cell: "1-1"
         Then the cell: "1-1" should not show any symbol
 
-
+    @this
     Scenario: Game over > The cells with mine not tagged as suspected should be uncovered at game over
         Given the user loads the following Mock Data: "**o-*o*"
         When the user uncover the cell: "1-1"

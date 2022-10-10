@@ -71,7 +71,16 @@ Then("is game over", async () => {
 // Then("the app should uncover all mined cells that are not tagged as suspected");
 // Then("the app should uncover all cell tagged as suspected with no mine");
 // Then("the app should disable all cells");
-// Then("board display should be: {string}");
+Then("board display should be: {string}", async (boardDisplay) => {
+  let visibleMines = await page.locator("text=*").count();
+  let totalMines = 0
+  for (let i = 0; i < boardDisplay.length; i++) {
+    if (boardDisplay[i] === "*") {
+      totalMines++;
+    }
+  }
+  expect(visibleMines).toBe(totalMines)
+});
 // Then("difficulty should be {string}");
 // Then("the app should restore to {string} default state");
 // Then("posible remining mines should be {string}");
