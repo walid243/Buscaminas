@@ -83,6 +83,9 @@ Then("board display should be: {string}", async (boardDisplay) => {
     if (expectedDisplay[i] === display[i]) {
       coincidences++;
     }
+    else {
+      break;
+    }
   }
   expect(coincidences).toBe(expectedDisplay.length);
 });
@@ -99,11 +102,23 @@ Then("board display should be: {string}", async (boardDisplay) => {
 // Then("posible remaining mines should be: {string}");
 Then("the cell: {string} should be disabled", async (cellId) => {
   let locator = await page.locator(`[data-testid="${cellId}"]`);
-  let cellAvailability = await locator.getAttribute("disabled")
-  console.log(cellAvailability);
-  expect(cellAvailability).toBe("true");
+  let isCellDisabled = await locator.getAttribute("disabled")
+  expect(isCellDisabled).toBe("true");
 });
-// Then("all cells should be disabled");
+Then("all cells should be disabled", async () => {
+  let cells = await page.locator("td.cell")
+  let areCellsDisabled
+  for (let i = 0; i < await cells.count(); i++) {;
+    console.log(i);
+    areCellsDisabled = await cells.nth(i).getAttribute("disabled")
+    console.log(areCellsDisabled);
+    if (areCellsDisabled !== "true") {
+      break;
+    }
+  }
+  expect(areCellsDisabled).toBe("true");
+
+});
 // Then("the app should do nothing");
 // Then("the app should check all the adjacent cells");
 Then("the cell: {string} should show the following symbol: {string}" , async (cellId, symbol) => {

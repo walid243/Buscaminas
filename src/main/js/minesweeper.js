@@ -83,7 +83,6 @@ function addClickEvent() {
           uncoverCell(this.getAttribute("id"));
           if (isMined(this.innerText)) {
             gameOver();
-            uncoverMines();
           }
           break;
 
@@ -112,6 +111,8 @@ function addClickEvent() {
 function gameOver() {
   let board = document.getElementById("board");
   board.setAttribute("gameover", true);
+  uncoverMines()
+  disableAllCells();
 }
 
 function isMined(value) {
@@ -162,4 +163,11 @@ function uncorectlyTaggedCell(cellId){
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
   cell.innerText = "x";
+}
+
+function disableAllCells(){
+  let elements = document.getElementsByClassName("cell");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].setAttribute("disabled", true);
+  }
 }
