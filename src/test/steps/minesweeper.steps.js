@@ -73,13 +73,13 @@ Then("is game over", async () => {
 // Then("the app should disable all cells");
 Then("board display should be: {string}", async (boardDisplay) => {
   let visibleMines = await page.locator("text=*").count();
-  let totalMines = 0
+  let explotedMines = 0
   for (let i = 0; i < boardDisplay.length; i++) {
     if (boardDisplay[i] === "*") {
-      totalMines++;
+      explotedMines++;
     }
   }
-  expect(visibleMines).toBe(totalMines)
+  expect(visibleMines).toBe(explotedMines)
 });
 // Then("difficulty should be {string}");
 // Then("the app should restore to {string} default state");

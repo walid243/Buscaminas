@@ -79,12 +79,13 @@ Feature: Minesweeper App
         When the user untag the questionable cell: "1-1"
         Then the cell: "1-1" should not show any symbol
 
-    @this
+    @done
     Scenario: Game over > The cells with mine not tagged as suspected should be uncovered at game over
         Given the user loads the following Mock Data: "**o-*o*"
         When the user uncover the cell: "1-1"
         Then board display should be: "**.-*.*"
-
+    
+    @this
     Scenario: Game over > The cells with mine correctly tagged as suspected should not uncover at game over
         Given the user loads the following Mock Data: "**o-*o*"
         And the user tagged the cell: "1-1" as suspected

@@ -142,7 +142,7 @@ function uncoverMines() {
     idPart = getCellId(elementId);
     row = parseInt(idPart[0]) - 1;
     col = parseInt(idPart[1]) - 1;
-    if (isMined(boardData[row][col])) {
+    if (isMined(boardData[row][col]) && elements[i].innerText != "!") {
       uncoverCell(elementId);
     }
   }
