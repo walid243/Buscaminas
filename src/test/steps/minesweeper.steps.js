@@ -7,7 +7,7 @@ var url = "http://127.0.0.1:5500/src/main/html/minesweeper.html";
 
 function getExpectedDisplay(boardDisplay){
   let splitedDisplay = boardDisplay.split("-")
-  let expectedDisplay = splitedDisplay[0].concat(splitedDisplay[1]).replace("."," ")
+  let expectedDisplay = splitedDisplay[0].concat(splitedDisplay[1]).replace(/\./g," ")
   return expectedDisplay
 }
 async function leftClickOnCell(cellId) {
@@ -109,9 +109,7 @@ Then("all cells should be disabled", async () => {
   let cells = await page.locator("td.cell")
   let areCellsDisabled
   for (let i = 0; i < await cells.count(); i++) {;
-    console.log(i);
     areCellsDisabled = await cells.nth(i).getAttribute("disabled")
-    console.log(areCellsDisabled);
     if (areCellsDisabled !== "true") {
       break;
     }
@@ -128,6 +126,6 @@ Then("the cell: {string} should show the following symbol: {string}" , async (ce
 });
 Then("the cell: {string} should not show any symbol" , async (cellId) => {
   let locator = await page.locator(`[data-testid="${cellId}"]`);
-  let cellSymbol = await locator.innerText();
+  let cellSymbol = await locator.textContent();
   expect(cellSymbol).toBe(" ");
 });

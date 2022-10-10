@@ -130,7 +130,7 @@ function tagAsQuestionable(cellId) {
 }
 function untag(cellId) {
   let cell = document.getElementById(cellId);
-  cell.innerText = "";
+  cell.textContent = " ";
 }
 
 function uncoverMines() {
