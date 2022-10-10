@@ -85,7 +85,7 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-1"
         Then board display should be: "**.-*.*"
     
-    @this
+    @done
     Scenario: Game over > The cells with mine correctly tagged as suspected should not uncover at game over
         Given the user loads the following Mock Data: "**o-*o*"
         And the user tagged the cell: "1-1" as suspected
@@ -93,6 +93,7 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-2"
         Then board display should be: "!*.-!.*"
 
+    @this
     Scenario: Game over > The cells with no mine tagged as suspected should show the incorrectly tagged cell value at game over
         Given the user loads the following Mock Data: "**o-*o*"
         And the user tagged the cell: "1-3" as suspected

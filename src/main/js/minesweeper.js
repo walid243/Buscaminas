@@ -48,6 +48,7 @@ function createCell(id, rowId) {
   cell.setAttribute("id", rowId + "-" + id);
   cell.setAttribute("data-testid", rowId + "-" + id);
   cell.classList.add("cell", "covered");
+  cell.innerText = " ";
   return cell;
 }
 
@@ -59,7 +60,7 @@ function uncoverCell(id) {
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
   cell.setAttribute("disabled", true);
-  cell.innerText = boardData != null ? boardData[row][col] : "";
+  cell.innerText = boardData != null ? boardData[row][col] : " ";
 }
 function addEvent() {
   addClickEvent();
@@ -142,6 +143,9 @@ function uncoverMines() {
     idPart = getCellId(elementId);
     row = parseInt(idPart[0]) - 1;
     col = parseInt(idPart[1]) - 1;
+    if (!isMined(boardData[row][col]) && elements[i].innerText == "!") {
+    uncorectlyTaggedCell(elementId);
+    }
     if (isMined(boardData[row][col]) && elements[i].innerText != "!") {
       uncoverCell(elementId);
     }
@@ -150,4 +154,12 @@ function uncoverMines() {
 
 function getCellId(id){
   return id.split("-");
+}
+
+function uncorectlyTaggedCell(cellId){
+  let cell = document.getElementById(cellId);
+  cell.classList.add("incorrectly-tagged");
+  cell.classList.remove("covered");
+  cell.classList.add("uncovered");
+  cell.innerText = "x";
 }

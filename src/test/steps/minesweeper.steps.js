@@ -5,7 +5,11 @@ const { expect } = require("@playwright/test");
 var url = "http://127.0.0.1:5500/src/main/html/minesweeper.html";
 // const url='https://walid243.github.io/minesweeper_app/src/main/html/minesweeper.html';
 
-
+function getExpectedDisplay(boardDisplay){
+  let splitedDisplay = boardDisplay.split("-")
+  let expectedDisplay = splitedDisplay[0].concat(splitedDisplay[1]).replace("."," ")
+  return expectedDisplay
+}
 async function leftClickOnCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: 'left'});
 }
@@ -72,14 +76,15 @@ Then("is game over", async () => {
 // Then("the app should uncover all cell tagged as suspected with no mine");
 // Then("the app should disable all cells");
 Then("board display should be: {string}", async (boardDisplay) => {
-  let visibleMines = await page.locator("text=*").count();
-  let explotedMines = 0
-  for (let i = 0; i < boardDisplay.length; i++) {
-    if (boardDisplay[i] === "*") {
-      explotedMines++;
+  let display = await page.locator("td.cell").allTextContents();
+  let coincidences = 0
+  let expectedDisplay = getExpectedDisplay(boardDisplay)
+  for (let i = 0; i < expectedDisplay.length; i++) {
+    if (expectedDisplay[i] === display[i]) {
+      coincidences++;
     }
   }
-  expect(visibleMines).toBe(explotedMines)
+  expect(coincidences).toBe(expectedDisplay.length);
 });
 // Then("difficulty should be {string}");
 // Then("the app should restore to {string} default state");
@@ -109,5 +114,5 @@ Then("the cell: {string} should show the following symbol: {string}" , async (ce
 Then("the cell: {string} should not show any symbol" , async (cellId) => {
   let locator = await page.locator(`[data-testid="${cellId}"]`);
   let cellSymbol = await locator.innerText();
-  expect(cellSymbol).toBe("");
+  expect(cellSymbol).toBe(" ");
 });
