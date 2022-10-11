@@ -35,7 +35,9 @@ Given("the user tagged the cell: {string} as suspected" , async (cellId) => {
 Given("the user tagged the cell: {string} as questionable", async (cellId) => {
   await middleClickOnCell(cellId);
 });
-// Given("the user uncovered the cell: {string}")
+Given("the user uncovered the cell: {string}", async (cellId) => {
+  await leftClickOnCell(cellId);
+})
 // Given("difficulty is {string}");
 // Given("board have {string} mines");
 // Given("posible remaining mines is: {string}");
@@ -74,7 +76,7 @@ Then("is game over", async () => {
 // Then ("the app sould uncover all adjacent cells to {string}")
 // Then("the app should uncover all mined cells that are not tagged as suspected");
 // Then("the app should uncover all cell tagged as suspected with no mine");
-// Then("the app should disable all cells");
+
 Then("board display should be: {string}", async (boardDisplay) => {
   let display = await page.locator("td.cell").allTextContents();
   let coincidences = 0
