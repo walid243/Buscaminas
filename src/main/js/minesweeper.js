@@ -77,6 +77,7 @@ function addClickEvent() {
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
     elements[i].addEventListener("mousedown", function (Event) {
+      startTimer()
       switch (Event.button) {
         case 0:
           uncoverCell(this.getAttribute("id"));
@@ -102,6 +103,7 @@ function addClickEvent() {
           }
           break;
       }
+
     });
     elements[i].addEventListener("contextmenu", function (event) {
       event.preventDefault();
@@ -263,4 +265,9 @@ function getAdjacentMinesCount(row, col){
 function setNotMinedCellValue(cellId, value){
   let cell = document.getElementById(cellId);
   cell.innerText = value;
+}
+
+function startTimer() {
+  let timer = document.getElementById("timer");
+  timer.innerText = "0";
 }

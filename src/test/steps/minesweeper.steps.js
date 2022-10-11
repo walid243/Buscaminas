@@ -116,7 +116,10 @@ Then("timer should be empty", async () => {
   expect(timer).toBe("");
 });
 // Then("the app should restore to default state");
-// Then("timer should start on: {string}");
+Then("timer should display: {string}", async (value) => {
+  let timer = await page.locator("data-testid=timer").innerText();
+  expect(timer).toBe(value);
+});
 // Then("timer should increase by {string} for each second");
 // Then("posible remaining mines should be: {string}");
 Then("the cell: {string} should be disabled", async (cellId) => {

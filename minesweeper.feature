@@ -121,11 +121,11 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-3"
         Then board display should be: "1!1"
 
-    @this
+    @done
     Scenario: Timer > The timer default state should be empty
         Then timer should be empty
 
-
+    @this
     Scenario: Timer > When the users first move is uncover a cell then the timer should start with value 0
         When the user uncover the cell: "1-1"
         Then timer should display: "0"
