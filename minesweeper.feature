@@ -125,12 +125,12 @@ Feature: Minesweeper App
     Scenario: Timer > The timer default state should be empty
         Then timer should be empty
 
-    @this
+    @done
     Scenario: Timer > When the users first move is uncover a cell then the timer should start with value 0
         When the user uncover the cell: "1-1"
         Then timer should display: "0"
 
-
+    @this
     Scenario: Timer > When the users first move is tag a cell as suspected then the timer should start with value 0
         When the user tag the cell: "1-1" as suspected
         Then timer should display: "0"
