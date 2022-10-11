@@ -55,13 +55,10 @@ function createCell(id, rowId) {
 
 function uncoverCell(id) {
   let cell = document.getElementById(id);
-  let idPart = getCellId(id);
-  let row = parseInt(idPart[0]) - 1;
-  let col = parseInt(idPart[1]) - 1;
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
   cell.setAttribute("disabled", true);
-  cell.innerText = boardData != null ? boardData[row][col] : " ";
+  setCellValue(cell.getAttribute("id"));
   updateCoveredCells();
 }
 function addEvent() {
@@ -228,4 +225,42 @@ function getCoveredCellsCount(){
 
 function updateCoveredCells(){
   coveredCells = getCoveredCellsCount();
+}
+
+function setCellValue(cellId){
+  let idPart = getCellId(cellId);
+  let row = parseInt(idPart[0]) - 1;
+  let col = parseInt(idPart[1]) - 1;
+  if (isMined(boardData[row][col])) {
+    setCellAsMined(cellId);
+  } else {
+    setNotMinedCellValue(cellId, getAdjacentMinesCount(row, col));
+  }
+}
+function isValidPosition(currentRow, currentCol){
+  return currentRow >= 0 && currentRow < boardData.length && currentCol >= 0 && currentCol < boardData[currentRow].length;
+}
+
+function setCellAsMined(cellId){
+  let cell = document.getElementById(cellId);
+  cell.innerText = "*";
+}
+
+function getAdjacentMinesCount(row, col){
+  let adjacentMinesCount = 0;
+  for (let i = row-1; i <= row+1 ; i++) {
+    for (let j = col-1; j <= col+1; j++) {
+      if (isValidPosition(i, j)){
+        if (isMined(boardData[i][j])){
+          adjacentMinesCount++;
+        }
+      }
+    }
+  }
+  return adjacentMinesCount;
+}
+
+function setNotMinedCellValue(cellId, value){
+  let cell = document.getElementById(cellId);
+  cell.innerText = value;
 }
