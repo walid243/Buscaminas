@@ -111,7 +111,10 @@ Then("all cells should be covered", async () => {
   let totalCells = await page.locator("td.cell").count();
   expect(coveredCells).toBe(totalCells);
 });
-// Then("timer should be null");
+Then("timer should be empty", async () => {
+  let timer = await page.locator("data-testid=timer").innerText();
+  expect(timer).toBe("");
+});
 // Then("the app should restore to default state");
 // Then("timer should start on: {string}");
 // Then("timer should increase by {string} for each second");
