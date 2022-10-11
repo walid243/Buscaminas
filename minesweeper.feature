@@ -40,6 +40,7 @@ Feature: Minesweeper App
     Background: App opened
         Given the user opens the app
 
+    @this
     Scenario: All cells are covered on game load
         Then all cells should be covered
         
@@ -113,7 +114,7 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-3"
         Then all cells should be disabled
 
-    @this
+    @done
     Scenario: Game win > When the user win uncovering all cells with no mine and without tagging any mined cell as suspected then the mined cells should be tagged as suspected
         Given the user loads the following Mock Data: "o*o"
         And the user uncovered the cell: "1-1"
