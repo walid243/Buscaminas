@@ -11,12 +11,12 @@ function getExpectedDisplay(boardDisplay) {
 
   if (boardDisplay.includes("-")) {
     splitedDisplay = boardDisplay.split("-");
-    if (splitedDisplay.includes("0")) {
       expectedDisplay = splitedDisplay[0];
       for (let i = 1; i < splitedDisplay.length; i++) {
-        expectedDisplay.concat(splitedDisplay[i]).replace(/0/g, " ");
+        expectedDisplay = expectedDisplay.concat(splitedDisplay[i])
       }
-    }
+      expectedDisplay = expectedDisplay.replace(/0/g, " ");
+      expectedDisplay = expectedDisplay.replace(/\./g, " ");
   } else {
     expectedDisplay = boardDisplay;
   }

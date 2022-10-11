@@ -40,7 +40,7 @@ Feature: Minesweeper App
     Background: App opened
         Given the user opens the app
 
-    @this
+    @done
     Scenario: All cells are covered on game load
         Then all cells should be covered
         
