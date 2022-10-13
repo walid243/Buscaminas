@@ -3,9 +3,13 @@ const totalMines = getMinesCount();
 var coveredCells = getCoveredCellsCount();
 var timerInterval;
 
-createBoard();
-getMineCounterValue();
-addEvent();
+startGame();
+
+function startGame(){
+  createBoard();
+  getMineCounterValue();
+  addEvent();
+}
 function getLiveStatus() {
   document.getElementById("board").value = live;
   return live;
@@ -29,12 +33,15 @@ function hasMockParam() {
 function createBoard() {
   let height = boardData != null ? boardData.length : 8;
   let width;
-  let board = document.getElementById("board");
+  let board = document.createElement("table");
+  board.setAttribute("id", "board");
+  board.setAttribute("data-testid", "board");
   board.appendChild(createHeadRow());
   for (let i = 1; i <= height; i++) {
     width = boardData != null ? boardData[i - 1].length : 8;
     board.appendChild(createRow(i, width));
   }
+  document.body.appendChild(board);
 }
 
 function createHeadRow() {
@@ -49,6 +56,9 @@ function createHeadRow() {
   let reset = document.createElement("td");
   reset.setAttribute("id", "reset");
   reset.setAttribute("data-testid", "reset");
+  reset.addEventListener("click", function () {
+    resetGame();
+  });
 
   let timer = document.createElement("td");
   timer.setAttribute("id", "timer");
@@ -347,3 +357,9 @@ function increaseMineCounterValue() {
   let counter = document.getElementById("counter");
   counter.innerText = parseInt(counter.innerText) + 1;
 }
+
+function resetGame(){
+  document.body.removeChild(document.getElementById("board"));
+  startGame();
+}
+

@@ -4,6 +4,12 @@ const { expect } = require("@playwright/test");
 
 var url = "http://127.0.0.1:5500/src/main/html/minesweeper.html";
 // const url='https://walid243.github.io/minesweeper_app/src/main/html/minesweeper.html';
+const defaultMines = 10;
+
+async function getTotalCells(){
+  return await page.locator("td.cell").count();
+}
+
 
 function getExpectedDisplay(boardDisplay) {
   let splitedDisplay;
@@ -32,6 +38,31 @@ async function middleClickOnCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: "middle" });
 }
 
+async function checkRowsCount (expectedCount) {
+  let rowCount = await page.locator("table > tr").count();
+  expect(rowCount).toBe(expectedCount);
+}
+
+async function checkCellsCount(expectedCellsCount) {
+  let cellCount = await page.locator("td.cell").count();
+  expect(cellCount).toBe(expectedCellsCount);
+}
+
+async function checkMineCounter(expectedDisplay) {
+  let counterDisplay = await page.locator("data-testid=counter").innerText();
+  expect(counterDisplay).toBe(expectedDisplay);
+}
+
+async function checkTimer(expectedValue) {
+  let timer = await page.locator("data-testid=timer").innerText();
+  expect(timer).toBe(expectedValue);
+}
+
+async function checkCoveredCells (totalCells) {
+  let coveredCells = await page.locator("td.covered").count();
+  expect(coveredCells).toBe(totalCells);
+}
+
 Given("the user opens the app", async () => {
   await page.goto(url);
 });
@@ -51,9 +82,8 @@ Given("the user uncovered the cell: {string}", async (cellId) => {
 });
 // Given("difficulty is {string}");
 // Given("board have {string} mines");
-Given("mine counter display: {string}", async (mineCounter) => {
-  let counter = await page.locator("data-testid=counter").innerText();
-  expect(counter).toBe(mineCounter);
+Given("mine counter display: {string}", async (expectedDisplay) => {
+  await checkMineCounter(expectedDisplay);
 });
 // Given("the app uncovered all adjacent cells");
 When("the user uncover the cell: {string}", async (cellId) => {
@@ -61,7 +91,9 @@ When("the user uncover the cell: {string}", async (cellId) => {
 });
 // When("the cell: {string} don't have adjacent mines");
 // When("the user press on {string}");
-// When("the user press reset button");
+When("the user uses the reset", async () => {
+  await page.locator("data-testid=reset").click();
+});
 // When("the app found the empty cell: {string} uncovered by {string}")
 // When ("the app uncover all adjacent cells")
 When("the user tag the cell: {string} as suspected", async (cellId) => {
@@ -105,37 +137,37 @@ Then("board display should be: {string}", async (boardDisplay) => {
   expect(coincidences).toBe(expectedDisplay.length);
 });
 // Then("difficulty should be {string}");
-// Then("the app should restore to {string} default state");
+Then("the app should restore to default state", async () => {
+  await checkRowsCount(9);
+  await checkCellsCount(await getTotalCells());
+  await checkMineCounter(defaultMines.toString());
+  await checkTimer("");
+  await checkCoveredCells(await getTotalCells());
+
+});
 // Then("posible remining mines should be {string}");
 
 Then("board should have {int} rows", async (rows) => {
-  let rowCount = await page.locator("table > tr").count();
-  expect(rowCount).toBe(rows);
+  await checkRowsCount(rows);
 });
 
 Then("board should have {int} cells", async (cells) => {
-  let cellCount = await page.locator("td.cell").count();
-  expect(cellCount).toBe(cells);
+  await checkCellsCount(cells);
 });
 
 Then("all cells should be covered", async () => {
-  let coveredCells = await page.locator("td.covered").count();
-  let totalCells = await page.locator("td.cell").count();
-  expect(coveredCells).toBe(totalCells);
+  await checkCoveredCells(await getTotalCells());
 });
 Then("timer should be empty", async () => {
-  let timer = await page.locator("data-testid=timer").innerText();
-  expect(timer).toBe("");
+  await checkTimer("");
 });
 // Then("the app should restore to default state");
 Then("timer should display: {string}", async (value) => {
-  let timer = await page.locator("data-testid=timer").innerText();
-  expect(timer).toBe(value);
+  await checkTimer(value);
 });
 // Then("timer should increase by {string} for each second");
-Then("mine counter should display: {string}", async (mineCounter) => {
-  let counter = await page.locator("data-testid=counter").innerText();
-  expect(counter).toBe(mineCounter);
+Then("mine counter should display: {string}", async (expectedValue) => {
+  await checkMineCounter(expectedValue);
 });
 Then("the cell: {string} should be disabled", async (cellId) => {
   let locator = await page.locator(`[data-testid="${cellId}"]`);
@@ -143,15 +175,8 @@ Then("the cell: {string} should be disabled", async (cellId) => {
   expect(isCellDisabled).toBe("true");
 });
 Then("all cells should be disabled", async () => {
-  let cells = await page.locator("td.cell");
-  let areCellsDisabled;
-  for (let i = 0; i < (await cells.count()); i++) {
-    areCellsDisabled = await cells.nth(i).getAttribute("disabled");
-    if (areCellsDisabled !== "true") {
-      break;
-    }
-  }
-  expect(areCellsDisabled).toBe("true");
+  let disabledCellsCount = await page.locator("td.cell[disabled=\"true\"]").count();
+  expect(disabledCellsCount).toBe(await getTotalCells());
 });
 // Then("the app should do nothing");
 // Then("the app should check all the adjacent cells");

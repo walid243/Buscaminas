@@ -101,7 +101,7 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-2"
         Then board display should be: "**x-*.*"
 
-    @done
+    @done @re
     Scenario: Game over > When is game over all cells should be disabled
         Given the user loads the following Mock Data: "**0"
         When the user uncover the cell: "1-1"
@@ -213,7 +213,7 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-1"
         Then mine counter should display: "1"
 
-    @this
+    @done
     Scenario: Default state
         Then board should have 9 rows
         And board should have 64 cells
@@ -221,9 +221,9 @@ Feature: Minesweeper App
         And timer should be empty
         And all cells should be covered
 
+    @this
     Scenario: Reset > When the user uses the reset then the app should restore to default state
-        Given the user loads the following Mock Data: "o*o"
-        And the user tagged the cell: "1-1"
+        Given the user tagged the cell: "1-1" as suspected
         And the user uncovered the cell: "1-3"
         When the user uses the reset
         Then the app should restore to default state
