@@ -107,8 +107,17 @@ Then("board display should be: {string}", async (boardDisplay) => {
 // Then("difficulty should be {string}");
 // Then("the app should restore to {string} default state");
 // Then("posible remining mines should be {string}");
-// Then("board width should be {string}");
-// Then("board height should be {string}");
+
+Then("board should have {int} rows", async (rows) => {
+  let rowCount = await page.locator("table > tr").count();
+  expect(rowCount).toBe(rows);
+});
+
+Then("board should have {int} cells", async (cells) => {
+  let cellCount = await page.locator("td.cell").count();
+  expect(cellCount).toBe(cells);
+});
+
 Then("all cells should be covered", async () => {
   let coveredCells = await page.locator("td.covered").count();
   let totalCells = await page.locator("td.cell").count();

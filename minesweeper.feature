@@ -198,13 +198,14 @@ Feature: Minesweeper App
         When the user untag the suspected cell: "1-1"
         Then mine counter should display: "10"
 
-    @this
+    @done
     Scenario: Mine counter > The mine counter should not change when the user untag a cell tagged as questionable
         Given the user tagged the cell: "1-1" as questionable
         And mine counter display: "10"
         When the user untag the questionable cell: "1-1"
         Then mine counter should display: "10"
 
+    @done
     Scenario: Mine counter > The mine counter should increase when the user uncover a incorrectly tagged cell as suspected
         Given the user loads the following Mock Data: "o*o" 
         And the user tagged the cell: "1-1" as suspected
@@ -212,10 +213,11 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-1"
         Then mine counter should display: "1"
 
+    @this
     Scenario: Default state
-        Then board width should be "8"
-        And board height should be "8"
-        And mine counter should display "10"
+        Then board should have 9 rows
+        And board should have 64 cells
+        And mine counter should display: "10"
         And timer should be empty
         And all cells should be covered
 

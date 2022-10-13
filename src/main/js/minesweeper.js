@@ -30,15 +30,39 @@ function createBoard() {
   let height = boardData != null ? boardData.length : 8;
   let width;
   let board = document.getElementById("board");
+  board.appendChild(createHeadRow());
   for (let i = 1; i <= height; i++) {
     width = boardData != null ? boardData[i - 1].length : 8;
     board.appendChild(createRow(i, width));
   }
 }
 
+function createHeadRow() {
+  let headRow = document.createElement("tr");
+  headRow.setAttribute("id", "row-0");
+  headRow.setAttribute("data-testid", "row-0");
+
+  let counter = document.createElement("td");
+  counter.setAttribute("id", "counter");
+  counter.setAttribute("data-testid", "counter");
+
+  let reset = document.createElement("td");
+  reset.setAttribute("id", "reset");
+  reset.setAttribute("data-testid", "reset");
+
+  let timer = document.createElement("td");
+  timer.setAttribute("id", "timer");
+  timer.setAttribute("data-testid", "timer");
+  timer.setAttribute("started", "false")
+
+  headRow.append(counter, reset, timer);
+  return headRow;
+}
+
+
 function createRow(id, width) {
   let row = document.createElement("tr");
-  row.setAttribute("id", id);
+  row.setAttribute("id", "row-"+id);
   for (let j = 1; j <= width; j++) {
     row.appendChild(createCell(j, id));
   }
