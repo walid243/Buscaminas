@@ -228,7 +228,7 @@ Feature: Minesweeper App
         When the user uses the reset
         Then the app should restore to default state
 
-    @this
+    @done
     Scenario Outline: Uncover not mined cell > If it has adjacent mines then the cell should display the count of adjacent mines to it
         Given the user loads the following Mock Data: "<boardData>"
         When the user uncover the cell: "2-2"
@@ -245,13 +245,15 @@ Feature: Minesweeper App
             | ***-*o*-**o | 7                  |
             | ***-*o*-*** | 8                  |
 
+    
     Scenario: Uncover not mined cell and without adjacent mines > cell empty
         Given the user loads the following Mock Data: "ooo-ooo-ooo-***"
         When the user uncover the cell: "2-2"
-        Then the cell "2-2" should be empty
+        Then the cell: "2-2" should show the following symbol: " "
 
+    @this
     Scenario: Uncover a cell empty > uncover the adjacent cells
-        Given the user loads the following Mock Data: 
+        Given the user loads the following Mock Data:
         """
         ooo
         ooo
@@ -259,7 +261,7 @@ Feature: Minesweeper App
         ***
         """
         When the user uncover the cell: "2-2"
-        Then the board display should be: 
+        Then board display should be: 
         """
         000
         000

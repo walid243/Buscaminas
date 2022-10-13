@@ -38,6 +38,20 @@ async function middleClickOnCell(cellId) {
   await page.locator(`[data-testid="${cellId}"]`).click({ button: "middle" });
 }
 
+async function checkBoardDisplay (boardDisplay) {
+  let display = await page.locator("td.cell").allTextContents();
+  let coincidences = 0;
+  let expectedDisplay = getExpectedDisplay(boardDisplay);
+  for (let i = 0; i < expectedDisplay.length; i++) {
+    if (expectedDisplay[i] === display[i]) {
+      coincidences++;
+    } else {
+      break;
+    }
+  }
+  expect(coincidences).toBe(expectedDisplay.length);
+}
+
 async function checkRowsCount (expectedCount) {
   let rowCount = await page.locator("table > tr").count();
   expect(rowCount).toBe(expectedCount);
@@ -71,6 +85,12 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
   let mockUrl = url + "?mockData=" + mockData;
   await page.goto(mockUrl);
 });
+
+Given("the user loads the following Mock Data", async (docString) =>{
+  let mockUrl = url + "?mockData=" + docString;
+  await page.goto(mockUrl);
+})
+
 Given("the user tagged the cell: {string} as suspected", async (cellId) => {
   await rightClickOnCell(cellId);
 });
@@ -124,17 +144,10 @@ Then("is game over", async () => {
 // Then("the app should uncover all cell tagged as suspected with no mine");
 
 Then("board display should be: {string}", async (boardDisplay) => {
-  let display = await page.locator("td.cell").allTextContents();
-  let coincidences = 0;
-  let expectedDisplay = getExpectedDisplay(boardDisplay);
-  for (let i = 0; i < expectedDisplay.length; i++) {
-    if (expectedDisplay[i] === display[i]) {
-      coincidences++;
-    } else {
-      break;
-    }
-  }
-  expect(coincidences).toBe(expectedDisplay.length);
+  await checkBoardDisplay(boardDisplay);
+});
+Then("board display should be:", async (boardDisplay) => {
+  await checkBoardDisplay(boardDisplay);
 });
 // Then("difficulty should be {string}");
 Then("the app should restore to default state", async () => {
