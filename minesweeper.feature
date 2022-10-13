@@ -176,7 +176,7 @@ Feature: Minesweeper App
         When the user tag the cell: "1-1" as suspected
         Then mine counter should display: "9"
 
-    @this
+    @done
     Scenario:Mine counter > The mine counter can have negative values if the user tag as suspected more cells than mines on board
         Given the user loads the following Mock Data: "o*o"
         And the user tagged the cell: "1-1" as suspected
@@ -184,11 +184,12 @@ Feature: Minesweeper App
         When the user tag the cell: "1-2" as suspected
         Then mine counter should display: "-1"
 
+    @done
     Scenario: Mine counter > The mine counter should increase when the user change a cell tag from suspected to questionable
         Given the user tagged the cell: "1-1" as suspected
-        And mine counter display: "0"
+        And mine counter display: "9"
         When the user tag the cell: "1-1" as questionable
-        Then mine counter should display: "1"
+        Then mine counter should display: "10"
 
     Scenario: Mine counter > The mine counter should increase when the user untag a suspected cell
         Given the user tagged the cell: "1-1" as suspected
