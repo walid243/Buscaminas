@@ -191,11 +191,12 @@ Feature: Minesweeper App
         When the user tag the cell: "1-1" as questionable
         Then mine counter should display: "10"
 
+    @this
     Scenario: Mine counter > The mine counter should increase when the user untag a suspected cell
         Given the user tagged the cell: "1-1" as suspected
-        And mine counter display: "0"
-        When the user untag the cell: "1-1"
-        Then mine counter should display: "1"
+        And mine counter display: "9"
+        When the user untag the suspected cell: "1-1"
+        Then mine counter should display: "10"
 
     Scenario: Mine counter > The mine counter should not change when the user untag a cell tagged as questionable
         Given the user loads the following Mock Data: "o*o"
