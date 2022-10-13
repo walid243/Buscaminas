@@ -135,7 +135,7 @@ Feature: Minesweeper App
         When the user tag the cell: "1-1" as suspected
         Then timer should display: "0"
 
-    @this
+    @done
     Scenario: Timer > When the users first move is tag a cell as questionable then the timer should start with value 0
         When the user tag the cell: "1-1" as questionable
         Then timer should display: "0"

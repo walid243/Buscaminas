@@ -1,6 +1,7 @@
 const boardData = getBoardData();
 const totalMines = getMinesCount();
 var coveredCells = getCoveredCellsCount();
+var timerInterval
 
 createBoard();
 addEvent();
@@ -77,7 +78,7 @@ function addClickEvent() {
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
     elements[i].addEventListener("mousedown", function (Event) {
-      startTimer()
+      startTimer();
       switch (Event.button) {
         case 0:
           uncoverCell(this.getAttribute("id"));
@@ -114,6 +115,7 @@ function addClickEvent() {
 function gameOver() {
   let board = document.getElementById("board");
   board.setAttribute("gameover", true);
+  stopTimer()
   uncoverMines()
   disableAllCells();
 }
@@ -177,6 +179,7 @@ function disableAllCells(){
 function win(){
   let board = document.getElementById("board");
   board.setAttribute("win", true);
+  stopTimer()
   disableAllCells();
   autoTagMines();
 }
@@ -267,7 +270,24 @@ function setNotMinedCellValue(cellId, value){
   cell.innerText = value;
 }
 
+function setTimer(timer) {
+  timer.innerText = "0";
+  timer.setAttribute("started", "true");
+}
+
 function startTimer() {
   let timer = document.getElementById("timer");
-  timer.innerText = "0";
+  if (timer.getAttribute("started") == "false") {
+  setTimer(timer);
+  timerInterval = setInterval(() => {
+    timer.innerText = parseInt(timer.innerText) + 1;
+  }, 1000);
+}
+}
+
+function stopTimer() {
+  let timer = document.getElementById("timer");
+  clearInterval(timerInterval);
+  timer.setAttribute("started", "false");
+
 }
