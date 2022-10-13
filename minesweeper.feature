@@ -221,17 +221,18 @@ Feature: Minesweeper App
         And timer should be empty
         And all cells should be covered
 
-    @this
+    @done
     Scenario: Reset > When the user uses the reset then the app should restore to default state
         Given the user tagged the cell: "1-1" as suspected
         And the user uncovered the cell: "1-3"
         When the user uses the reset
         Then the app should restore to default state
 
+    @this
     Scenario Outline: Uncover not mined cell > If it has adjacent mines then the cell should display the count of adjacent mines to it
         Given the user loads the following Mock Data: "<boardData>"
         When the user uncover the cell: "2-2"
-        Then the cell "2-2" should show: "<AdjacentMinesCount>"
+        Then the cell: "2-2" should show the following symbol: "<AdjacentMinesCount>"
 
         Examples:
             | boardData   | AdjacentMinesCount |
