@@ -170,16 +170,18 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-1"
         Then after 2 seconds await the timer should display "2"
 
-    @this
+    @done
     Scenario:Mine counter > The mine counter should decrease by 1 for every cell tagged as suspected
         Given mine counter display: "10"
         When the user tag the cell: "1-1" as suspected
         Then mine counter should display: "9"
 
+    @this
     Scenario:Mine counter > The mine counter can have negative values if the user tag as suspected more cells than mines on board
-        Given the user tagged the cell: "1-1" as suspected
+        Given the user loads the following Mock Data: "o*o"
+        And the user tagged the cell: "1-1" as suspected
         And mine counter display: "0"
-        When the user tag the cell: "1-2" as suspected cell
+        When the user tag the cell: "1-2" as suspected
         Then mine counter should display: "-1"
 
     Scenario: Mine counter > The mine counter should increase when the user change a cell tag from suspected to questionable
