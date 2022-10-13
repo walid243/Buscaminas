@@ -1,9 +1,10 @@
 const boardData = getBoardData();
 const totalMines = getMinesCount();
 var coveredCells = getCoveredCellsCount();
-var timerInterval
+var timerInterval;
 
 createBoard();
+getMineCounterValue();
 addEvent();
 function getLiveStatus() {
   document.getElementById("board").value = live;
@@ -81,6 +82,9 @@ function addClickEvent() {
       startTimer();
       switch (Event.button) {
         case 0:
+          if (this.innerText == "!") {
+            increaseMineCounterValue();
+          }
           uncoverCell(this.getAttribute("id"));
           if (isMined(this.innerText)) {
             gameOver();
@@ -93,18 +97,22 @@ function addClickEvent() {
           if (this.innerText == "?") {
             untag(this.getAttribute("id"));
           } else {
+            if (this.innerText == "!") {
+              increaseMineCounterValue();
+            }
             tagAsQuestionable(this.getAttribute("id"));
           }
           break;
         case 2:
           if (this.innerText == "!") {
             untag(this.getAttribute("id"));
+            increaseMineCounterValue();
           } else {
             tagAsSuspected(this.getAttribute("id"));
+            decreaseMineCounterValue();
           }
           break;
       }
-
     });
     elements[i].addEventListener("contextmenu", function (event) {
       event.preventDefault();
@@ -115,13 +123,16 @@ function addClickEvent() {
 function gameOver() {
   let board = document.getElementById("board");
   board.setAttribute("gameover", true);
-  stopTimer()
-  uncoverMines()
+  stopTimer();
+  uncoverMines();
   disableAllCells();
 }
 
 function isMined(value) {
   return value == "*";
+}
+function isSuspected(value) {
+  return value == "!";
 }
 
 function tagAsSuspected(cellId) {
@@ -140,17 +151,17 @@ function untag(cellId) {
 
 function uncoverMines() {
   let elements = document.getElementsByClassName("cell");
-  let elementId
-  let idPart
-  let row
-  let col
+  let elementId;
+  let idPart;
+  let row;
+  let col;
   for (let i = 0; i < elements.length; i++) {
-    elementId = elements[i].getAttribute("id")
+    elementId = elements[i].getAttribute("id");
     idPart = getCellId(elementId);
     row = parseInt(idPart[0]) - 1;
     col = parseInt(idPart[1]) - 1;
     if (!isMined(boardData[row][col]) && elements[i].innerText == "!") {
-    uncorectlyTaggedCell(elementId);
+      uncorectlyTaggedCell(elementId);
     }
     if (isMined(boardData[row][col]) && elements[i].innerText != "!") {
       uncoverCell(elementId);
@@ -158,11 +169,11 @@ function uncoverMines() {
   }
 }
 
-function getCellId(id){
+function getCellId(id) {
   return id.split("-");
 }
 
-function uncorectlyTaggedCell(cellId){
+function uncorectlyTaggedCell(cellId) {
   let cell = document.getElementById(cellId);
   cell.classList.add("incorrectly-tagged");
   cell.classList.remove("covered");
@@ -170,28 +181,28 @@ function uncorectlyTaggedCell(cellId){
   cell.innerText = "x";
 }
 
-function disableAllCells(){
+function disableAllCells() {
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
     elements[i].setAttribute("disabled", true);
   }
 }
-function win(){
+function win() {
   let board = document.getElementById("board");
   board.setAttribute("win", true);
-  stopTimer()
+  stopTimer();
   disableAllCells();
   autoTagMines();
 }
 
-function autoTagMines(){
+function autoTagMines() {
   let elements = document.getElementsByClassName("cell");
-  let elementId
-  let idPart
-  let row
-  let col
+  let elementId;
+  let idPart;
+  let row;
+  let col;
   for (let i = 0; i < elements.length; i++) {
-    elementId = elements[i].getAttribute("id")
+    elementId = elements[i].getAttribute("id");
     idPart = getCellId(elementId);
     row = parseInt(idPart[0]) - 1;
     col = parseInt(idPart[1]) - 1;
@@ -217,22 +228,24 @@ function getMinesCount() {
   return count;
 }
 
-function getCoveredCellsCount(){
+function getCoveredCellsCount() {
   let count = 0;
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
-    if (elements[i].classList.contains("covered") && elements[i].innerText != "!") {
+    if (
+      elements[i].classList.contains("covered")
+    ) {
       count++;
     }
   }
   return count;
 }
 
-function updateCoveredCells(){
+function updateCoveredCells() {
   coveredCells = getCoveredCellsCount();
 }
 
-function setCellValue(cellId){
+function setCellValue(cellId) {
   let idPart = getCellId(cellId);
   let row = parseInt(idPart[0]) - 1;
   let col = parseInt(idPart[1]) - 1;
@@ -242,21 +255,26 @@ function setCellValue(cellId){
     setNotMinedCellValue(cellId, getAdjacentMinesCount(row, col));
   }
 }
-function isValidPosition(currentRow, currentCol){
-  return currentRow >= 0 && currentRow < boardData.length && currentCol >= 0 && currentCol < boardData[currentRow].length;
+function isValidPosition(currentRow, currentCol) {
+  return (
+    currentRow >= 0 &&
+    currentRow < boardData.length &&
+    currentCol >= 0 &&
+    currentCol < boardData[currentRow].length
+  );
 }
 
-function setCellAsMined(cellId){
+function setCellAsMined(cellId) {
   let cell = document.getElementById(cellId);
   cell.innerText = "*";
 }
 
-function getAdjacentMinesCount(row, col){
+function getAdjacentMinesCount(row, col) {
   let adjacentMinesCount = 0;
-  for (let i = row-1; i <= row+1 ; i++) {
-    for (let j = col-1; j <= col+1; j++) {
-      if (isValidPosition(i, j)){
-        if (isMined(boardData[i][j])){
+  for (let i = row - 1; i <= row + 1; i++) {
+    for (let j = col - 1; j <= col + 1; j++) {
+      if (isValidPosition(i, j)) {
+        if (isMined(boardData[i][j])) {
           adjacentMinesCount++;
         }
       }
@@ -265,7 +283,7 @@ function getAdjacentMinesCount(row, col){
   return adjacentMinesCount;
 }
 
-function setNotMinedCellValue(cellId, value){
+function setNotMinedCellValue(cellId, value) {
   let cell = document.getElementById(cellId);
   cell.innerText = value;
 }
@@ -278,16 +296,30 @@ function setTimer(timer) {
 function startTimer() {
   let timer = document.getElementById("timer");
   if (timer.getAttribute("started") == "false") {
-  setTimer(timer);
-  timerInterval = setInterval(() => {
-    timer.innerText = parseInt(timer.innerText) + 1;
-  }, 1000);
-}
+    setTimer(timer);
+    timerInterval = setInterval(() => {
+      timer.innerText = parseInt(timer.innerText) + 1;
+    }, 1000);
+  }
 }
 
 function stopTimer() {
   let timer = document.getElementById("timer");
   clearInterval(timerInterval);
   timer.setAttribute("started", "false");
+}
 
+function getMineCounterValue() {
+  let counter = document.getElementById("counter");
+  counter.innerText = getMinesCount();
+}
+
+function decreaseMineCounterValue() {
+  let counter = document.getElementById("counter");
+  counter.innerText = parseInt(counter.innerText) - 1;
+}
+
+function increaseMineCounterValue() {
+  let counter = document.getElementById("counter");
+  counter.innerText = parseInt(counter.innerText) + 1;
 }

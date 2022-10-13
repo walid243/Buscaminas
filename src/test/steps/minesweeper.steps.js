@@ -51,7 +51,10 @@ Given("the user uncovered the cell: {string}", async (cellId) => {
 });
 // Given("difficulty is {string}");
 // Given("board have {string} mines");
-// Given("posible remaining mines is: {string}");
+Given("mine counter display: {string}", async (mineCounter) => {
+  let counter = await page.locator("data-testid=counter").innerText();
+  expect(counter).toBe(mineCounter);
+});
 // Given("the app uncovered all adjacent cells");
 When("the user uncover the cell: {string}", async (cellId) => {
   await leftClickOnCell(cellId);
@@ -121,7 +124,10 @@ Then("timer should display: {string}", async (value) => {
   expect(timer).toBe(value);
 });
 // Then("timer should increase by {string} for each second");
-// Then("posible remaining mines should be: {string}");
+Then("mine counter should display: {string}", async (mineCounter) => {
+  let counter = await page.locator("data-testid=counter").innerText();
+  expect(counter).toBe(mineCounter);
+});
 Then("the cell: {string} should be disabled", async (cellId) => {
   let locator = await page.locator(`[data-testid="${cellId}"]`);
   let isCellDisabled = await locator.getAttribute("disabled");
