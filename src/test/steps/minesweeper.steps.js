@@ -10,6 +10,10 @@ async function getTotalCells(){
   return await page.locator("td.cell").count();
 }
 
+function mapString(docString){
+  let mockData = docString.replace(/\n/g, "-");
+  return mockData;
+}
 
 function getExpectedDisplay(boardDisplay) {
   let splitedDisplay;
@@ -86,8 +90,8 @@ Given("the user loads the following Mock Data: {string}", async (mockData) => {
   await page.goto(mockUrl);
 });
 
-Given("the user loads the following Mock Data", async (docString) =>{
-  let mockUrl = url + "?mockData=" + docString;
+Given("the user loads the following Mock Data:", async (docString) =>{
+  let mockUrl = url + "?mockData=" + mapString(docString);
   await page.goto(mockUrl);
 })
 
@@ -100,56 +104,59 @@ Given("the user tagged the cell: {string} as questionable", async (cellId) => {
 Given("the user uncovered the cell: {string}", async (cellId) => {
   await leftClickOnCell(cellId);
 });
-// Given("difficulty is {string}");
-// Given("board have {string} mines");
+
 Given("mine counter display: {string}", async (expectedDisplay) => {
   await checkMineCounter(expectedDisplay);
 });
-// Given("the app uncovered all adjacent cells");
+
 When("the user uncover the cell: {string}", async (cellId) => {
   await leftClickOnCell(cellId);
 });
-// When("the cell: {string} don't have adjacent mines");
-// When("the user press on {string}");
+
 When("the user uses the reset", async () => {
   await page.locator("data-testid=reset").click();
 });
-// When("the app found the empty cell: {string} uncovered by {string}")
-// When ("the app uncover all adjacent cells")
+
 When("the user tag the cell: {string} as suspected", async (cellId) => {
   await rightClickOnCell(cellId);
 });
 When("the user tag the cell: {string} as questionable", async (cellId) => {
   await middleClickOnCell(cellId);
 });
-// When("timer count is: {string}");
+
 When("the user untag the suspected cell: {string}", async (cellId) => {
   await rightClickOnCell(cellId);
 });
 When("the user untag the questionable cell: {string}", async (cellId) => {
   await middleClickOnCell(cellId);
 });
-// When("the cell: {string} don't have mine");
-// Then("the game should end", async () => {
-//   expect(live).toBe(false);
-// });
+When("the user uses mouse {string} button on the cell: {string}", async (button, cellId) => {
+  switch (button) {
+    case "left":
+      await leftClickOnCell(cellId);
+      break;
+    case "right":
+      await rightClickOnCell(cellId);
+      break;
+    case "middle":
+      await middleClickOnCell(cellId);
+      break;
+  }
+})
+
 Then("is game over", async () => {
   let text = await page.locator("text=*").innerText();
   expect(text).toBe("*");
 });
-// Then("timer should stop");
-// Then ("the app sould uncover all adjacent cells")
-// Then ("the app sould uncover all adjacent cells to {string}")
-// Then("the app should uncover all mined cells that are not tagged as suspected");
-// Then("the app should uncover all cell tagged as suspected with no mine");
 
 Then("board display should be: {string}", async (boardDisplay) => {
   await checkBoardDisplay(boardDisplay);
 });
 Then("board display should be:", async (boardDisplay) => {
-  await checkBoardDisplay(boardDisplay);
+  let mapBoardDisplay = mapString(boardDisplay);
+  await checkBoardDisplay(mapBoardDisplay);
 });
-// Then("difficulty should be {string}");
+
 Then("the app should restore to default state", async () => {
   await checkRowsCount(9);
   await checkCellsCount(await getTotalCells());
@@ -158,7 +165,7 @@ Then("the app should restore to default state", async () => {
   await checkCoveredCells(await getTotalCells());
 
 });
-// Then("posible remining mines should be {string}");
+
 
 Then("board should have {int} rows", async (rows) => {
   await checkRowsCount(rows);

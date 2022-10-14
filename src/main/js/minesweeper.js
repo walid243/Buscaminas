@@ -70,22 +70,22 @@ function createHeadRow() {
 }
 
 
-function createRow(id, width) {
+function createRow(rowNum, width) {
   let row = document.createElement("tr");
-  row.setAttribute("id", "row-"+id);
+  row.setAttribute("id", "row-"+rowNum);
   for (let j = 1; j <= width; j++) {
-    row.appendChild(createCell(j, id));
+    row.appendChild(createCell(j, rowNum));
   }
 
   return row;
 }
 
-function createCell(id, rowId) {
+function createCell(id, rowNum) {
   let cell = document.createElement("td");
-  cell.setAttribute("id", rowId + "-" + id);
-  cell.setAttribute("data-testid", rowId + "-" + id);
+  cell.setAttribute("id", rowNum + "-" + id);
+  cell.setAttribute("data-testid", rowNum + "-" + id);
   cell.classList.add("cell", "covered");
-  cell.innerText = " ";
+  cell.textContent = " ";
   return cell;
 }
 
@@ -95,20 +95,15 @@ function uncoverCell(id) {
   cell.classList.add("uncovered");
   cell.setAttribute("disabled", true);
   setCellValue(cell.getAttribute("id"));
+  if (cell.textContent == " ") {
+    uncoverNeighbours(cell.getAttribute("id"));
+  }
   updateCoveredCells();
 }
 function addEvent() {
   addClickEvent();
 }
-// function addClickEvent(){
-//   let elements = document.getElementsByClassName("cell");
-//   console.log("si");
-//   for (let i = 0; i < elements.length; i++) {
-//     elements[i].addEventListener("click", function(){
-//       uncoverCell(this.getAttribute("id"));
-//     });
-//   }
-// }
+
 function addClickEvent() {
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
@@ -116,11 +111,11 @@ function addClickEvent() {
       startTimer();
       switch (Event.button) {
         case 0:
-          if (this.innerText == "!") {
+          if (this.textContent == "!") {
             increaseMineCounterValue();
           }
           uncoverCell(this.getAttribute("id"));
-          if (isMined(this.innerText)) {
+          if (isMined(this.textContent)) {
             gameOver();
           } else if (coveredCells == totalMines) {
             win();
@@ -128,17 +123,17 @@ function addClickEvent() {
           break;
 
         case 1:
-          if (this.innerText == "?") {
+          if (this.textContent == "?") {
             untag(this.getAttribute("id"));
           } else {
-            if (this.innerText == "!") {
+            if (this.textContent == "!") {
               increaseMineCounterValue();
             }
             tagAsQuestionable(this.getAttribute("id"));
           }
           break;
         case 2:
-          if (this.innerText == "!") {
+          if (this.textContent == "!") {
             untag(this.getAttribute("id"));
             increaseMineCounterValue();
           } else {
@@ -171,12 +166,12 @@ function isSuspected(value) {
 
 function tagAsSuspected(cellId) {
   let cell = document.getElementById(cellId);
-  cell.innerText = "!";
+  cell.textContent = "!";
 }
 
 function tagAsQuestionable(cellId) {
   let cell = document.getElementById(cellId);
-  cell.innerText = "?";
+  cell.textContent = "?";
 }
 function untag(cellId) {
   let cell = document.getElementById(cellId);
@@ -194,10 +189,10 @@ function uncoverMines() {
     idPart = getCellId(elementId);
     row = parseInt(idPart[0]) - 1;
     col = parseInt(idPart[1]) - 1;
-    if (!isMined(boardData[row][col]) && elements[i].innerText == "!") {
+    if (!isMined(boardData[row][col]) && elements[i].textContent == "!") {
       uncorectlyTaggedCell(elementId);
     }
-    if (isMined(boardData[row][col]) && elements[i].innerText != "!") {
+    if (isMined(boardData[row][col]) && elements[i].textContent != "!") {
       uncoverCell(elementId);
     }
   }
@@ -212,7 +207,7 @@ function uncorectlyTaggedCell(cellId) {
   cell.classList.add("incorrectly-tagged");
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
-  cell.innerText = "x";
+  cell.textContent = "x";
 }
 
 function disableAllCells() {
@@ -300,7 +295,7 @@ function isValidPosition(currentRow, currentCol) {
 
 function setCellAsMined(cellId) {
   let cell = document.getElementById(cellId);
-  cell.innerText = "*";
+  cell.textContent = "*";
 }
 
 function getAdjacentMinesCount(row, col) {
@@ -314,16 +309,16 @@ function getAdjacentMinesCount(row, col) {
       }
     }
   }
-  return adjacentMinesCount;
+  return adjacentMinesCount == 0 ? " " : adjacentMinesCount;
 }
 
 function setNotMinedCellValue(cellId, value) {
   let cell = document.getElementById(cellId);
-  cell.innerText = value;
+  cell.textContent = value;
 }
 
 function setTimer(timer) {
-  timer.innerText = "0";
+  timer.textContent = "0";
   timer.setAttribute("started", "true");
 }
 
@@ -332,7 +327,7 @@ function startTimer() {
   if (timer.getAttribute("started") == "false") {
     setTimer(timer);
     timerInterval = setInterval(() => {
-      timer.innerText = parseInt(timer.innerText) + 1;
+      timer.textContent = parseInt(timer.textContent) + 1;
     }, 1000);
   }
 }
@@ -345,17 +340,17 @@ function stopTimer() {
 
 function getMineCounterValue() {
   let counter = document.getElementById("counter");
-  counter.innerText = getMinesCount();
+  counter.textContent = getMinesCount();
 }
 
 function decreaseMineCounterValue() {
   let counter = document.getElementById("counter");
-  counter.innerText = parseInt(counter.innerText) - 1;
+  counter.textContent = parseInt(counter.textContent) - 1;
 }
 
 function increaseMineCounterValue() {
   let counter = document.getElementById("counter");
-  counter.innerText = parseInt(counter.innerText) + 1;
+  counter.textContent = parseInt(counter.textContent) + 1;
 }
 
 function resetGame(){
@@ -363,3 +358,26 @@ function resetGame(){
   startGame();
 }
 
+function isCellCovered(cellId) {
+  return document.getElementById(cellId).classList.contains("covered");
+}
+
+function uncoverNeighbours(cellId) {
+  let idPart = getCellId(cellId);
+  let row = parseInt(idPart[0]) - 1;
+  let col = parseInt(idPart[1]) - 1;
+  let cellToUncover;
+  for (let i = row - 1; i <= row + 1; i++) {
+    for (let j = col - 1; j <= col + 1; j++) {
+      cellToUncover = (i + 1) + "-" + (j + 1);
+      if (isValidPosition(i, j) && isCellCovered(cellToUncover)) {
+        if (getAdjacentMinesCount(i, j) == " ") {
+          uncoverCell(cellToUncover);
+          uncoverNeighbours(cellToUncover);
+        } else {
+          uncoverCell(cellToUncover);
+        }
+      }
+    }
+  }
+}

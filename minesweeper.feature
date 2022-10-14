@@ -249,9 +249,9 @@ Feature: Minesweeper App
     Scenario: Uncover not mined cell and without adjacent mines > cell empty
         Given the user loads the following Mock Data: "ooo-ooo-ooo-***"
         When the user uncover the cell: "2-2"
-        Then the cell: "2-2" should show the following symbol: " "
+        Then the cell: "2-2" should show the following symbol: ""
 
-    @this
+    @done
     Scenario: Uncover a cell empty > uncover the adjacent cells
         Given the user loads the following Mock Data:
         """
@@ -266,48 +266,33 @@ Feature: Minesweeper App
         000
         000
         232
-        ...
+        !!!
         """
 
-    Scenario: Uncover empty cell > When an empty cell is uncovered by a neighbour cell then uncover all adjacent cells to it
-        Given the user loads the following Mock Data: 
-        """
-        ooo
-        ooo
-        oo*
-        """
-        When the user uncover the cell: "1-1"
-        Then the app should uncover all adjacent cells to "1-2"
-        And the app should uncover all adjacent cells to "2-1"
-        And the app should uncover all adjacent cells to "2-1"
-        And the board display should be: 
-        """
-        000
-        011
-        01.
-        """
-
-    Scenario: Disabling cell > when a cell is uncovered by another cell that cell should be disabled
-        Given the user loads the following Mock Data: "ooo-oo*-ooo"
-        When the user uncovered the cell: "1-1"
-        Then the app should disable all cells uncovered by the cell: "1-1"
-
+    @done
     Scenario: Mouse > How to uncover a cell with mouse
         Given the user loads the following Mock Data: "o*o"
-        When the user uses mouse "leftClick" button on the cell: "1-1"
-        Then the cell "1-1" should be uncovered
+        When the user uses mouse "left" button on the cell: "1-1"
+        Then the cell: "1-1" should show the following symbol: "1"
 
+    @done
     Scenario: Mouse > How to tag a cell as suspected with mouse
-        When the user uses mouse "rightClick" button on the cell: "1-1"
-        Then the cell "1-1" should be tagged as suspected
+        When the user uses mouse "right" button on the cell: "1-1"
+        Then the cell: "1-1" should show the following symbol: "!"
 
+    @done
     Scenario: Mouse > How to tag a cell as questionable with mouse
-        Given the user uses mouse "rightClick" button on the cell: "1-1"
-        When the user uses mouse "rightClick" button on cell "1-1"
-        Then the cell "1-1" should be tagged as questionable
+        When the user uses mouse "middle" button on the cell: "1-1"
+        Then the cell: "1-1" should show the following symbol: "?"
 
-    Scenario: Mouse > How to untag a cell with mouse
-        Given the user uses mouse "rightClick" button on the cell: "1-1"
-        And the user uses mouse "rightClick" button on the cell: "1-1"
-        When the user uses mouse "rightClick" button on cell "1-1"
-        Then the cell "1-1" should be untagged
+    @done
+    Scenario: Mouse > How to untag a cell tagged as suspected with mouse
+        Given the user tagged the cell: "1-1" as suspected
+        When the user uses mouse "right" button on the cell: "1-1"
+        Then the cell: "1-1" should not show any symbol
+
+    @done
+    Scenario: Mouse > How to untag a cell tagged as questionable with mouse
+        Given the user tagged the cell: "1-1" as questionable
+        When the user uses mouse "middle" button on the cell: "1-1"
+        Then the cell: "1-1" should not show any symbol
