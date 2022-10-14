@@ -10,18 +10,59 @@ function startGame(){
   getMineCounterValue();
   addEvent();
 }
-function getLiveStatus() {
-  document.getElementById("board").value = live;
-  return live;
+
+function setBoardData(cellsData) {
+  let matrix = [];
+  let row
+  for (let i = 0; i < cellsData.length; i++) {
+    row = [];
+    for (let j = 0; j < cellsData[i].length; j++) {
+     row.push({
+        id: (i+1)+ "-" + (j+1),
+        value: "",
+        isMine: cellsData[i][j] === "*",
+        isCovered: true,
+        isFlagged: false,
+        isQuestionMarked: false,
+      });
+    }
+    matrix.push(row);
+  }
+  return matrix;
+}
+
+function getRandomData() {
+  let randomData = [];
+  let cell;
+  let totalMines = 10;
+  let mines = 0;
+  while(mines < totalMines) {
+  for (let i = 0; i < 8; i++) {
+    let row = [];
+    for (let j = 0; j < 8; j++) {
+      if (row[j] !== "*") {
+      row.push(Math.random() < 0.2 ? "*" : " ");
+      mines++;
+      }
+    }
+    randomData.push(row);
+  }
+}
+  return randomData;
 }
 
 function getBoardData() {
+  let dataMatrix;
   if (hasMockParam()) {
     let mockParam = new URLSearchParams(window.location.search).get("mockData");
-    return mockParam.split("-");
+    let mockData = mockParam.split("-");
+     dataMatrix = setBoardData(mockData);
+
   } else {
-    return null;
+    dataMatrix = getRandomData();
   }
+  console.log(dataMatrix);
+  return dataMatrix;
 }
 
 function hasMockParam() {
@@ -274,12 +315,9 @@ function updateCoveredCells() {
   coveredCells = getCoveredCellsCount();
 }
 
-function setCellValue(cellId) {
-  let idPart = getCellId(cellId);
-  let row = parseInt(idPart[0]) - 1;
-  let col = parseInt(idPart[1]) - 1;
-  if (isMined(boardData[row][col])) {
-    setCellAsMined(cellId);
+function setCellValue(value) {
+  if (isMined(value)) {
+      return value;
   } else {
     setNotMinedCellValue(cellId, getAdjacentMinesCount(row, col));
   }
