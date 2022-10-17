@@ -1,24 +1,28 @@
-const boardData = getBoardData();
-const totalMines = getMinesCount();
-var coveredCells = getCoveredCellsCount();
+var boardData;
+var totalMines;
+var coveredCells;
 var timerInterval;
 
 startGame();
 
-function startGame(){
+function startGame() {
+  boardData = setBoardData();
+  totalMines = getMinesCount();
+  coveredCells = getCoveredCellsCount();
+  setCellsValue();
   createBoard();
   getMineCounterValue();
   addEvent();
 }
 
-function setBoardData(cellsData) {
+function setMockData(cellsData) {
   let matrix = [];
-  let row
+  let row;
   for (let i = 0; i < cellsData.length; i++) {
     row = [];
     for (let j = 0; j < cellsData[i].length; j++) {
-     row.push({
-        id: (i+1)+ "-" + (j+1),
+      row.push({
+        id: i + 1 + "-" + (j + 1),
         value: "",
         isMine: cellsData[i][j] === "*",
         isCovered: true,
@@ -31,37 +35,59 @@ function setBoardData(cellsData) {
   return matrix;
 }
 
-function getRandomData() {
-  let randomData = [];
-  let cell;
+function getRandomBoardData() {
+  let dataMatrix;
+  let row;
+  let height = 8;
+  let width = 8;
   let totalMines = 10;
-  let mines = 0;
-  while(mines < totalMines) {
-  for (let i = 0; i < 8; i++) {
-    let row = [];
-    for (let j = 0; j < 8; j++) {
-      if (row[j] !== "*") {
-      row.push(Math.random() < 0.2 ? "*" : " ");
-      mines++;
+  let mines;
+  while (true) {
+    mines = 0;
+    dataMatrix = [];
+    for (let i = 0; i < height; i++) {
+      row = [];
+      for (let j = 0; j < width; j++) {
+        if (mines < totalMines) {
+          if (Math.random() < 0.2) {
+            row.push(setCellObject(i + 1, j + 1, true, "*"));
+            mines++;
+          } else {
+            row.push(setCellObject(i + 1, j + 1, false));
+          }
+        } else {
+          row.push(setCellObject(i + 1, j + 1, false));
+        }
       }
+      dataMatrix.push(row);
     }
-    randomData.push(row);
+    if (mines == totalMines) {
+      console.log(dataMatrix);
+      return dataMatrix;
+    }
   }
 }
-  return randomData;
-}
 
-function getBoardData() {
+function setCellObject(row, col, isMined, value = null) {
+  let cell = {
+    id: row + "-" + col,
+    value: value,
+    isMine: isMined,
+    isCovered: true,
+    isFlagged: false,
+    isQuestionMarked: false,
+  };
+  return cell;
+}
+function setBoardData() {
   let dataMatrix;
   if (hasMockParam()) {
     let mockParam = new URLSearchParams(window.location.search).get("mockData");
     let mockData = mockParam.split("-");
-     dataMatrix = setBoardData(mockData);
-
+    dataMatrix = setMockData(mockData);
   } else {
-    dataMatrix = getRandomData();
+    dataMatrix = getRandomBoardData();
   }
-  console.log(dataMatrix);
   return dataMatrix;
 }
 
@@ -72,14 +98,14 @@ function hasMockParam() {
 }
 
 function createBoard() {
-  let height = boardData != null ? boardData.length : 8;
+  let height = boardData.length;
   let width;
   let board = document.createElement("table");
   board.setAttribute("id", "board");
   board.setAttribute("data-testid", "board");
   board.appendChild(createHeadRow());
   for (let i = 1; i <= height; i++) {
-    width = boardData != null ? boardData[i - 1].length : 8;
+    width = boardData[i - 1].length;
     board.appendChild(createRow(i, width));
   }
   document.body.appendChild(board);
@@ -104,16 +130,15 @@ function createHeadRow() {
   let timer = document.createElement("td");
   timer.setAttribute("id", "timer");
   timer.setAttribute("data-testid", "timer");
-  timer.setAttribute("started", "false")
+  timer.setAttribute("started", "false");
 
   headRow.append(counter, reset, timer);
   return headRow;
 }
 
-
 function createRow(rowNum, width) {
   let row = document.createElement("tr");
-  row.setAttribute("id", "row-"+rowNum);
+  row.setAttribute("id", "row-" + rowNum);
   for (let j = 1; j <= width; j++) {
     row.appendChild(createCell(j, rowNum));
   }
@@ -123,40 +148,53 @@ function createRow(rowNum, width) {
 
 function createCell(id, rowNum) {
   let cell = document.createElement("td");
-  cell.setAttribute("id", rowNum + "-" + id);
+  let cellId = rowNum + "-" + id;
+  cell.setAttribute("id",cellId);
   cell.setAttribute("data-testid", rowNum + "-" + id);
   cell.classList.add("cell", "covered");
-  cell.textContent = " ";
   return cell;
 }
 
-function uncoverCell(id) {
-  let cell = document.getElementById(id);
+function uncoverCell(cellId, cellData) {
+  let cell = document.getElementById(cellId);
+  console.log(cell);
   cell.classList.remove("covered");
   cell.classList.add("uncovered");
   cell.setAttribute("disabled", true);
-  setCellValue(cell.getAttribute("id"));
-  if (cell.textContent == " ") {
+  cell.textContent = cellData.value == 0 ? " " : cellData.value;
+  cellData.isCovered = false;
+  if (cellData.value == 0) {
     uncoverNeighbours(cell.getAttribute("id"));
   }
   updateCoveredCells();
 }
+
+function getCellData(id) {
+  let cellPosition = getCellId(id);
+  let row = cellPosition[0] - 1;
+  let col = cellPosition[1] - 1;
+  return boardData[row][col];
+}
 function addEvent() {
-  addClickEvent();
+  clickEvent();
 }
 
-function addClickEvent() {
+function clickEvent() {
   let elements = document.getElementsByClassName("cell");
+  let cellData;
   for (let i = 0; i < elements.length; i++) {
     elements[i].addEventListener("mousedown", function (Event) {
+      cellData = getCellData(this.getAttribute("id"));
       startTimer();
+      if (cellData.isCovered) {
       switch (Event.button) {
         case 0:
-          if (this.textContent == "!") {
-            increaseMineCounterValue();
-          }
-          uncoverCell(this.getAttribute("id"));
-          if (isMined(this.textContent)) {
+            if (cellData.isFlagged) {
+              increaseMineCounterValue();
+              updateCellData(cellData, "isFlagged", false);
+            }
+          uncoverCell(this.getAttribute("id"), cellData);
+          if (isMined(cellData)) {
             gameOver();
           } else if (coveredCells == totalMines) {
             win();
@@ -164,30 +202,45 @@ function addClickEvent() {
           break;
 
         case 1:
-          if (this.textContent == "?") {
-            untag(this.getAttribute("id"));
+          if (cellData.isQuestionMarked) {
+            setCellTag(this, " ");
+            updateCellData(cellData, "isQuestionMarked", false);
           } else {
-            if (this.textContent == "!") {
+            if (cellData.isFlagged) {
               increaseMineCounterValue();
+              updateCellData(cellData, "isFlagged", false);
             }
-            tagAsQuestionable(this.getAttribute("id"));
+            setCellTag(this, "?");
+            updateCellData(cellData, "isQuestionMarked", true);
           }
+          console.log(cellData);
           break;
         case 2:
-          if (this.textContent == "!") {
-            untag(this.getAttribute("id"));
-            increaseMineCounterValue();
-          } else {
-            tagAsSuspected(this.getAttribute("id"));
-            decreaseMineCounterValue();
+          if (cellData.isQuestionMarked) {
+            updateCellData(cellData, "isQuestionMarked", false);
           }
+          if (cellData.isFlagged) {
+            setCellTag(this, " ");
+            increaseMineCounterValue();
+            updateCellData(cellData, "isFlagged", false);
+          } else {
+            setCellTag(this, "!");
+            decreaseMineCounterValue();
+            updateCellData(cellData, "isFlagged", true);
+          }
+          console.log(cellData);
           break;
       }
+    }
     });
     elements[i].addEventListener("contextmenu", function (event) {
       event.preventDefault();
     });
   }
+}
+
+function updateCellData(cellData, property, value) {
+  cellData[property] = value;
 }
 
 function gameOver() {
@@ -198,43 +251,36 @@ function gameOver() {
   disableAllCells();
 }
 
-function isMined(value) {
-  return value == "*";
+function isMined(cell) {
+  return cell.isMine
 }
-function isSuspected(value) {
-  return value == "!";
-}
-
-function tagAsSuspected(cellId) {
-  let cell = document.getElementById(cellId);
-  cell.textContent = "!";
+function isFlagged(cellData) {
+  return cellData.isFlagged;
 }
 
-function tagAsQuestionable(cellId) {
-  let cell = document.getElementById(cellId);
-  cell.textContent = "?";
+function setCellTag(cell, tag) {
+  cell.textContent = tag;
 }
-function untag(cellId) {
-  let cell = document.getElementById(cellId);
-  cell.textContent = " ";
-}
+
 
 function uncoverMines() {
-  let elements = document.getElementsByClassName("cell");
-  let elementId;
+  let cells = document.getElementsByClassName("cell");
+  let cellData;
+  let cellId;
   let idPart;
   let row;
   let col;
-  for (let i = 0; i < elements.length; i++) {
-    elementId = elements[i].getAttribute("id");
-    idPart = getCellId(elementId);
+  for (let i = 0; i < cells.length; i++) {
+    cellId = cells[i].getAttribute("id");
+    cellData = getCellData(cellId);
+    idPart = getCellId(cellId);
     row = parseInt(idPart[0]) - 1;
     col = parseInt(idPart[1]) - 1;
-    if (!isMined(boardData[row][col]) && elements[i].textContent == "!") {
-      uncorectlyTaggedCell(elementId);
+    if (!isMined(cellData) && isFlagged(cellData)) {
+      uncorectlyTaggedCell(cellId);
     }
-    if (isMined(boardData[row][col]) && elements[i].textContent != "!") {
-      uncoverCell(elementId);
+    if (isMined(cellData) && !isFlagged(cellData)) {
+      uncoverCell(cellId, cellData);
     }
   }
 }
@@ -302,9 +348,7 @@ function getCoveredCellsCount() {
   let count = 0;
   let elements = document.getElementsByClassName("cell");
   for (let i = 0; i < elements.length; i++) {
-    if (
-      elements[i].classList.contains("covered")
-    ) {
+    if (elements[i].classList.contains("covered")) {
       count++;
     }
   }
@@ -315,11 +359,13 @@ function updateCoveredCells() {
   coveredCells = getCoveredCellsCount();
 }
 
-function setCellValue(value) {
-  if (isMined(value)) {
-      return value;
-  } else {
-    setNotMinedCellValue(cellId, getAdjacentMinesCount(row, col));
+function setCellsValue() {
+  for (let i = 0; i < boardData.length; i++) {
+    for (let j = 0; j < boardData[i].length; j++) {
+      if (!boardData[i][j].isMine){
+      boardData[i][j].value = getAdjacentMinesCount(i, j);
+    }
+    }
   }
 }
 function isValidPosition(currentRow, currentCol) {
@@ -347,7 +393,7 @@ function getAdjacentMinesCount(row, col) {
       }
     }
   }
-  return adjacentMinesCount == 0 ? " " : adjacentMinesCount;
+  return adjacentMinesCount;
 }
 
 function setNotMinedCellValue(cellId, value) {
@@ -391,7 +437,7 @@ function increaseMineCounterValue() {
   counter.textContent = parseInt(counter.textContent) + 1;
 }
 
-function resetGame(){
+function resetGame() {
   document.body.removeChild(document.getElementById("board"));
   startGame();
 }
@@ -405,15 +451,17 @@ function uncoverNeighbours(cellId) {
   let row = parseInt(idPart[0]) - 1;
   let col = parseInt(idPart[1]) - 1;
   let cellToUncover;
+  let cellData;
   for (let i = row - 1; i <= row + 1; i++) {
     for (let j = col - 1; j <= col + 1; j++) {
-      cellToUncover = (i + 1) + "-" + (j + 1);
+      cellToUncover = i + 1 + "-" + (j + 1);
       if (isValidPosition(i, j) && isCellCovered(cellToUncover)) {
+      cellData = getCellData(cellToUncover);
         if (getAdjacentMinesCount(i, j) == " ") {
-          uncoverCell(cellToUncover);
+          uncoverCell(cellToUncover, cellData);
           uncoverNeighbours(cellToUncover);
         } else {
-          uncoverCell(cellToUncover);
+          uncoverCell(cellToUncover, cellData);
         }
       }
     }

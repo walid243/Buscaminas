@@ -181,11 +181,9 @@ Then("all cells should be covered", async () => {
 Then("timer should be empty", async () => {
   await checkTimer("");
 });
-// Then("the app should restore to default state");
 Then("timer should display: {string}", async (value) => {
   await checkTimer(value);
 });
-// Then("timer should increase by {string} for each second");
 Then("mine counter should display: {string}", async (expectedValue) => {
   await checkMineCounter(expectedValue);
 });
@@ -198,8 +196,6 @@ Then("all cells should be disabled", async () => {
   let disabledCellsCount = await page.locator("td.cell[disabled=\"true\"]").count();
   expect(disabledCellsCount).toBe(await getTotalCells());
 });
-// Then("the app should do nothing");
-// Then("the app should check all the adjacent cells");
 Then(
   "the cell: {string} should show the following symbol: {string}",
   async (cellId, symbol) => {
