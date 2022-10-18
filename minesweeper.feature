@@ -101,7 +101,7 @@ Feature: Minesweeper App
         When the user uncover the cell: "1-2"
         Then board display should be: "**x-*.*"
 
-    @done @re
+    @done
     Scenario: Game over > When is game over all cells should be disabled
         Given the user loads the following Mock Data: "**0"
         When the user uncover the cell: "1-1"
